@@ -23,7 +23,11 @@ public class Variable implements Value{
 	}
 	
 	public void setValue(Value v){
-		scope.variables.put(name, v);
+		if(v instanceof Variable){
+			setValue(((Variable) v).val());
+		}else{
+			scope.variables.put(name, v);
+		}
 	}
 
 	@Override

@@ -111,8 +111,9 @@ public class Scope {
 		}
 	}
 	
-	public void reserve(String name) {
+	public Variable reserve(String name) {
 		variables.put(name, new Expression(Special.UNDEFINED));
+		return load(name);
 	}
 	
 }

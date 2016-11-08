@@ -149,7 +149,7 @@ public class CclVm implements IVM {
 
 	@Override
 	public void reserve(String var) {
-		s.reserve(var);
+		put(s.reserve(var));
 	}
 
 }
