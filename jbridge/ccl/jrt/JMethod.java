@@ -1,17 +1,17 @@
 package ccl.jrt;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import ccl.rt.Value;
 import ccl.rt.Expression;
 
 public class JMethod {
 
-	private Method method;
+	private ICallable method;
 	private Object object;
 
-	public JMethod(Object o, Method m) {
+	public JMethod(Object o, ICallable m) {
 		this.method = m;
 		this.object = o;
 	}

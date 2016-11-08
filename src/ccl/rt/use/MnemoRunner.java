@@ -1,8 +1,9 @@
 package ccl.rt.use;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -10,7 +11,6 @@ import ccl.rt.Special;
 import ccl.rt.Tool;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
-import ccl.rt.store.Scope;
 import ccl.rt.store.Variable;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
@@ -22,6 +22,7 @@ public class MnemoRunner implements Runner {
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
 	private Value retVal;
+	private boolean executed;
 	
 	public MnemoRunner(){
 		marks = new HashMap<String, Integer>();
@@ -30,7 +31,12 @@ public class MnemoRunner implements Runner {
 	}
 	
 	@Override
-	public Value execute(Scope privateScope, InputStream cclCode, IVM vm) {
+	public Value execute(InputStream cclCode, IVM vm) {
+		if(executed){
+			System.err.println("Warning: a runner should not be executed more then once normally!");
+			new RuntimeException("DEBUG, do not panic :)").printStackTrace(System.out);
+		}
+		executed = true;
 		Scanner s = new Scanner(cclCode);
 		int line = 0;
 		while(s.hasNextLine()){
@@ -60,20 +66,28 @@ public class MnemoRunner implements Runner {
 		case "here": vm.here(Integer.parseInt(args)); break;
 		case "store":
 			Value v = vm.pop();
-			System.out.println(v);
 			((Variable) vm.pop()).setValue(v);
 			break;
 		case "newscope": vm.oScope(); break;
 		case "oldscope": vm.cScope(); break;
 		case "putS": vm.s(args); break;
+		case "putA": vm.a(Integer.parseInt(args)); break;
+		case "putM": vm.m(this.create(), new FileStreamFactory(new File(args))); break;
 		case "get": vm.put(vm.pop().getProperty(args)); break;
+		case "duplicate": vm.dup(); break;
 		case "pop":
 			Value val = vm.pop();
 			if(val instanceof Err){
 				return ret(val);
 			}else if(val.getValue() instanceof Err){
-				return ret(val);
+				return ret((Err) val.getValue());
 			}
+			break;
+		case "ret":
+			retVal = vm.pop();
+			return -1;
+		case "reserve":
+			vm.reserve(args);
 			break;
 		default: throw new RuntimeException("Unknown instr: " + instr);
 		}

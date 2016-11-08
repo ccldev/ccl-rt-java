@@ -2,6 +2,6 @@ package ccl.rt;
 
 public enum Special {
 	
-	UNDEFINED, INVALID;
+	UNDEFINED, INVALID, FUNCTION;
 	
 }

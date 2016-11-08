@@ -15,5 +15,9 @@ public class JClass extends Expression{
 	public Value getProperty(String name){
 		return new JExpression(null, clss, name);
 	}
+	
+	public Value invoke(Value... args){
+		return J.invoke(null, Call.pack(clss.getConstructors()), args);
+	}
 
 }

@@ -3,6 +3,8 @@ package ccl.rt.vm;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import ccl.rt.Array;
+import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Value;
@@ -67,8 +69,32 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void m(Runner r, InputStream methoddf) {
-		throw new RuntimeException("NI");
+	public void m(final Runner r, final Factory<InputStream> f) {
+		Func func = new Func(){
+
+			@Override
+			public Value invoke(Value... args) {
+				ArrayValue arr = new ArrayValue(new Array(args));
+				
+				s = s.chain();
+				s.reserve("parameters");
+				s.load("parameters").setValue(arr);
+				ArrayList<Value> oldRam = ram;
+				ram = new ArrayList<Value>();
+				Value v;
+				try {
+					v = r.create().execute(f.make(), CclVm.this);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				ram = oldRam;
+				s = s.parent();
+				return v;
+			}
+			
+		};
+		
+		put(func);
 	}
 
 	@Override
@@ -76,13 +102,13 @@ public class CclVm implements IVM {
 		Value[] args = new Value[paramCount];
 		Value method = null;
 		if(beforeParams){
-			method = ram.remove(ram.size() - 1);
+			method = pop();
 		}
 		for(int i = paramCount - 1; i >= 0; i--){
-			args[i] = ram.remove(ram.size() - 1);
+			args[i] = pop();
 		}
 		if(!beforeParams){
-			method = ram.remove(ram.size() - 1);
+			method = pop();
 		}
 		
 		Value v = method.invoke(args);
@@ -91,7 +117,9 @@ public class CclVm implements IVM {
 
 	@Override
 	public void dup() {
-		ram.add(ram.get(ram.size() - 1));
+		Value a = pop();
+		ram.add(a);
+		ram.add(a);
 	}
 
 	@Override
@@ -112,6 +140,16 @@ public class CclVm implements IVM {
 	@Override
 	public void put(Value v) {
 		ram.add(v);
+	}
+
+	@Override
+	public void a(int size) {
+		put(new ArrayValue(size));
+	}
+
+	@Override
+	public void reserve(String var) {
+		s.reserve(var);
 	}
 
 }

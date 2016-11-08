@@ -11,7 +11,8 @@ public interface IVM {
 	void s(String string) throws Exception;
 	void f(String floatn) throws Exception;
 	void i(String integer) throws Exception;
-	void m(Runner r, InputStream methoddf) throws Exception;
+	void m(Runner r, Factory<InputStream> s) throws Exception;
+	void a(int size);
 	
 	void call(boolean beforeParams, int paramCount) throws Exception;
 	void dup() throws Exception;
@@ -19,5 +20,6 @@ public interface IVM {
 	void load(String var);
 	void here(int index);
 	void put(Value property);
+	void reserve(String var);
 	
 }

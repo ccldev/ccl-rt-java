@@ -3,7 +3,6 @@ package ccl.jrt;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import ccl.rt.Expression;
 import ccl.rt.Special;
@@ -65,7 +64,7 @@ public class JExpression extends Expression {
 		if (methods.length == 0) {
 			return super.invoke(args);
 		} else {
-			return J.invoke(object, methods, args);
+			return J.invoke(object, Call.pack(methods), args);
 		}
 	}
 

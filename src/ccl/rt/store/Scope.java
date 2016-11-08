@@ -3,8 +3,10 @@ package ccl.rt.store;
 import java.util.HashMap;
 
 import ccl.rt.Expression;
+import ccl.rt.Func;
 import ccl.rt.Special;
 import ccl.rt.Value;
+import ccl.rt.lib.Environment;
 
 public class Scope {
 	
@@ -15,7 +17,35 @@ public class Scope {
 		variables = new HashMap<String, Value>();
 	}
 	
-	public Scope(){}
+	public Scope(){
+		initGlobals();
+	}
+	private void initGlobals() {
+		variables.put("boolean", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.boolean_(args[0]);
+			}
+		});
+		variables.put("error", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.error(args[0]);
+			}
+		});
+		variables.put("float", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.float_(args[0]);
+			}
+		});
+		variables.put("integer", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.integer(args[0]);
+			}
+		});
+	}
 	private Scope(Scope parent){
 		this.parent = parent;
 	}
