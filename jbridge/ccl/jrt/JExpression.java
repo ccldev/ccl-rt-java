@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import ccl.rt.Array;
 import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
@@ -14,7 +15,7 @@ public class JExpression extends Expression {
 	private Object object;
 	private Method[] methods;
 	private Class<?> clss;
-
+	
 	public JExpression(Object o, Class<?> c, String name) {
 		super(Special.INVALID);
 		this.object = o;

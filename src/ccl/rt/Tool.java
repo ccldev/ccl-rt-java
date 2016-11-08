@@ -15,10 +15,10 @@ public class Tool {
 		return b.toString();
 	}
 
-	public static Value[] link(Value[] a, Value[] b) {
+	public static Value[] link(int skip, Value[] a, Value[] b) {
 		ArrayList<Value> ret = new ArrayList<Value>();
 		int i;
-		for(i = 0; i < a.length; i++){
+		for(i = skip; i < a.length; i++){
 			ret.add(a[i]);
 		}
 		for(int j = 0; j < b.length; j++){

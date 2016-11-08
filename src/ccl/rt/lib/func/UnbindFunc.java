@@ -5,20 +5,20 @@ import ccl.rt.Tool;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 
-public class BindFunc extends Func {
+public class UnbindFunc extends Func {
 
 	private Value func;
-	private Value[] args0;
+	private int skip;
 
-	public BindFunc(Value func, Value[] args) {
+	public UnbindFunc(Value func, int skip) {
 		this.func = func;
-		this.args0 = args;
+		this.skip = skip;
 	}
 
 	@Override
 	public Value invoke(Value... args) {
 		try {
-			return func.invoke(Tool.link(0, args0, args));
+			return func.invoke(Tool.link(skip, args, new Value[0]));
 		} catch (Exception e) {
 			return new Err(e);
 		}

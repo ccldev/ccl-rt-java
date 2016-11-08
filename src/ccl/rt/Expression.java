@@ -10,7 +10,7 @@ import ccl.rt.err.Err;
 import ccl.rt.lib.Std;
 
 public class Expression implements Value {
-
+	
 	private Object value;
 
 	private ArrayList<String> propList;
@@ -30,11 +30,21 @@ public class Expression implements Value {
 	protected boolean contains(String name) {
 		return properties.get(name) != null;
 	}
-
+	
 	public Expression(Object value) {
 		this.value = value;
 		this.propList = new ArrayList<String>();
 		this.properties = new HashMap<String, Value>();
+		initBaseProperties();
+	}
+
+	private void initBaseProperties() {
+		propList.add("bind");
+		propList.add("unbind");
+		propList.add("for");
+		propList.add("type");
+		propList.add("properties");
+		propList.add("property");
 	}
 
 	public Value getProperty(String name) {
@@ -99,6 +109,13 @@ public class Expression implements Value {
 					return Std.bind(Expression.this, args);
 				}
 			};
+		case "unbind":
+			return new Func() {
+				@Override
+				public Value invoke(Value... args) {
+					return Std.unbind(Expression.this, args[0]);
+				}
+			};
 		case "for":
 			return new Func() {
 				@Override
@@ -106,11 +123,27 @@ public class Expression implements Value {
 					return Std.for_(Expression.this, args);
 				}
 			};
+		case "while":
+			return new Func() {
+				@Override
+				public Value invoke(Value... args) {
+					return Std.while0(Expression.this, args[0]);
+				}
+			};
+		case "property":
+			return new Func() {
+				@Override
+				public Value invoke(Value... args) {
+					return Expression.this.getProperty(args[0].getValue() + "");
+				}
+			};
 		case "type":
 			return new Expression(computeType());
+		case "properties":
+			return new ArrayValue(Array.clone(propList.toArray(new String[0])));
 		}
 
-		return new JExpression(value, value == null ? null : value.getClass(),
+		return new JExpression(value == null ? Special.UNDEFINED : value, value == null ? Special.class : value.getClass(),
 				name);
 	}
 
@@ -119,6 +152,9 @@ public class Expression implements Value {
 			return "error";
 		if (value instanceof Throwable)
 			return "error";
+		if (value instanceof Boolean){
+			return "boolean";
+		}
 		if (this instanceof JClass)
 			return "native";
 		if (value instanceof String)

@@ -6,6 +6,7 @@ import ccl.rt.Expression;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
+import ccl.rt.lib.func.UnbindFunc;
 
 public class Std {
 	
@@ -97,6 +98,10 @@ public class Std {
 		return new BindFunc(func, args);
 	}
 	
+	public static Value unbind(Value func, Value arg) {
+		return new UnbindFunc(func, ((Number) arg.getValue()).intValue());
+	}
+	
 	public static Value for_(Value func, Value[] args){
 		Array ret = new Array(0);
 		if(args.length == 1){
@@ -122,6 +127,18 @@ public class Std {
 			return new Err(new RuntimeException("Unexpected param count: " + args.length));
 		}
 		return new ArrayValue(ret);
+	}
+
+	public static Value while0(Value func, Value condition) {
+		Array a = new Array(0);
+		try {
+			while((Boolean) condition.invoke().getValue()){
+				a.pushValue(func.invoke());
+			}
+		} catch (Exception e) {
+			return new Err(e);
+		}
+		return new ArrayValue(a);
 	}
 	
 }
