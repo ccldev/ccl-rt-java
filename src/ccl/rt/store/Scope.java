@@ -51,6 +51,12 @@ public class Scope {
 				return Environment.array(args[0]);
 			}
 		});
+		variables.put("char", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.char_(args[0]);
+			}
+		});
 	}
 	private Scope(Scope parent){
 		this.parent = parent;

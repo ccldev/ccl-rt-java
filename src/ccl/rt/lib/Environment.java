@@ -31,10 +31,21 @@ public class Environment {
 		Object val = v.getValue();
 		return new ArrayValue(array0(val));
 	}
-	public static Array array0(Object val){
+	private static Array array0(Object val){
 		if(val instanceof Array) return (Array) val;
 		if(val instanceof Number) return new Array(((Number) val).intValue());
 		return Array.clone(val);
+	}
+	public static Value char_(Value v){
+		return new Expression(char0(v.getValue()));
+	}
+
+	private static Object char0(Object value) {
+		if(value instanceof Number){
+			return (char) ((Number) value).intValue();
+		}else if(value instanceof String){
+			return value.toString().charAt(0);
+		}else return new Err(value);
 	}
 	
 }
