@@ -55,7 +55,32 @@ public class CclVm implements IVM {
 
 	@Override
 	public void s(String string) {
-		ram.add(new Expression(string));
+		ram.add(new Expression(prepare(string)));
+	}
+
+	private String prepare(String string) {
+		StringBuilder b = new StringBuilder();
+		boolean unescape = false;
+		for(int i = 0; i < string.length(); i++){
+			char c = string.charAt(i);
+			if(unescape){
+				b.append(unescape(c));
+				unescape = false;
+			}else if(c == '\\'){
+				unescape = true;
+			}else{
+				b.append(c);
+			}
+		}
+		return b.toString();
+	}
+
+	private char unescape(char c) {
+		switch(c){
+		case 't': return '\t';
+		case 'n': return '\n';
+		default: return c;
+		}
 	}
 
 	@Override
@@ -98,18 +123,13 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void call(boolean beforeParams, int paramCount) throws Exception {
+	public void call(int paramCount) throws Exception {
 		Value[] args = new Value[paramCount];
 		Value method = null;
-		if(beforeParams){
-			method = pop();
-		}
 		for(int i = paramCount - 1; i >= 0; i--){
 			args[i] = pop();
 		}
-		if(!beforeParams){
-			method = pop();
-		}
+		method = pop();
 		
 		Value v = method.invoke(args);
 		ram.add(v);

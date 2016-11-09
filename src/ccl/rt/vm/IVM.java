@@ -14,7 +14,7 @@ public interface IVM {
 	void m(Runner r, Factory<InputStream> s) throws Exception;
 	void a(int size);
 	
-	void call(boolean beforeParams, int paramCount) throws Exception;
+	void call(int paramCount) throws Exception;
 	void dup() throws Exception;
 	Value pop() throws Exception;
 	void load(String var);

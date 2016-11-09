@@ -101,8 +101,10 @@ public class MnemoRunner implements Runner {
 
 	private void invoke(String[] split, IVM vm) throws Exception {
 		int params = Integer.parseInt(split[0]);
-		boolean beforeParams = split[1].equals("0");
-		vm.call(beforeParams, params);
+		if(split.length >= 2){
+			throw new RuntimeException("Warning: invoke should be used with 1 parameter!");
+		}
+		vm.call(params);
 	}
 
 	private void creation(int line, String[] split) {
