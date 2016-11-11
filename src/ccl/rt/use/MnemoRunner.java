@@ -63,7 +63,6 @@ public class MnemoRunner implements Runner {
 		case "load": vm.load(args); break;
 		case "putI": vm.i(args); break;
 		case "invoke": invoke(args.split(" "), vm); break;
-//		case "here": vm.here(Integer.parseInt(args)); break;
 		case "store":
 			Value v = vm.pop();
 			((Variable) vm.pop()).setValue(v);

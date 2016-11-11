@@ -42,9 +42,9 @@ public class Environment {
 
 	private static Object char0(Object value) {
 		if(value instanceof Number){
-			return (char) ((Number) value).intValue();
+			return "" + (char) ((Number) value).intValue();
 		}else if(value instanceof String){
-			return value.toString().charAt(0);
+			return "" + value.toString().charAt(0);
 		}else return new Err(value);
 	}
 	
