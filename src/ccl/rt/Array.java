@@ -58,10 +58,98 @@ public class Array {
 		if(o instanceof Object[]){
 			return clone0((Object[]) o);
 		}
+		if(o instanceof char[]){
+			return cloneChar((char[]) o);
+		}
+		if(o instanceof boolean[]){
+			return cloneBoolean((boolean[]) o);
+		}
+		if(o instanceof byte[]){
+			return cloneByte((byte[]) o);
+		}
+		if(o instanceof short[]){
+			return cloneShort((short[]) o);
+		}
+		if(o instanceof int[]){
+			return cloneInt((int[]) o);
+		}
+		if(o instanceof long[]){
+			return cloneLong((long[]) o);
+		}
+		if(o instanceof float[]){
+			return cloneFloat((float[]) o);
+		}
+		if(o instanceof double[]){
+			return cloneDouble((double[]) o);
+		}
 		throw new RuntimeException(o.getClass() + "");
 	}
 
-	private static Array clone0(Object[] o) {
+	private static Array cloneChar(char[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneBoolean(boolean[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneByte(byte[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneShort(short[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneInt(int[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneLong(long[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneFloat(float[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+	
+	private static Array cloneDouble(double[] o) {
+		Array ret = new Array(0);
+		for(int i = 0; i < o.length; i++){
+			ret.pushValue(new Expression(o[i]));
+		}
+		return ret;
+	}
+
+	private static <T> Array clone0(T[] o) {
 		Array ret = new Array(0);
 		for(int i = 0; i < o.length; i++){
 			ret.pushValue(new Expression(o[i]));

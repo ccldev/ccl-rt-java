@@ -36,6 +36,7 @@ public class CclVm implements IVM {
 				}
 			}
 		});
+		s.load("scope").setValue(new ScopeVal(s));
 	}
 
 	private void initStd() {
@@ -131,8 +132,12 @@ public class CclVm implements IVM {
 		}
 		method = pop();
 		
-		Value v = method.invoke(args);
-		ram.add(v);
+		try{
+			Value v = method.invoke(args);
+			ram.add(v);
+		}catch(RuntimeException e){
+			ram.add(new Err(e));
+		}
 	}
 
 	@Override
@@ -150,11 +155,6 @@ public class CclVm implements IVM {
 	@Override
 	public void load(String var) {
 		ram.add(s.load(var));
-	}
-
-	@Override
-	public void here(int index) {
-		ram.add(ram.remove(ram.size() - (index + 1)));
 	}
 
 	@Override

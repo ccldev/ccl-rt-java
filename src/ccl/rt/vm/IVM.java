@@ -18,7 +18,6 @@ public interface IVM {
 	void dup() throws Exception;
 	Value pop() throws Exception;
 	void load(String var);
-	void here(int index);
 	void put(Value property);
 	void reserve(String var);
 	

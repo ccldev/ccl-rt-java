@@ -53,7 +53,19 @@ public class Expression implements Value {
 		if (v != null) {
 			return v;
 		}
-
+		
+		if (computeType().equals("boolean")){
+			switch (name){
+			case "not":
+				return new Func() {
+					@Override
+					public Value invoke(Value... args) {
+						return Std.not(Expression.this);
+					}
+				};
+			}
+		}
+		
 		if (computeType().equals("number")){
 			switch (name) {
 			case "lss":

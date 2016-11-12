@@ -140,5 +140,10 @@ public class Std {
 		}
 		return new ArrayValue(a);
 	}
+
+	public static Value not(Expression expression) {
+		boolean b = (boolean) expression.getValue();
+		return new Expression(!b);
+	}
 	
 }
