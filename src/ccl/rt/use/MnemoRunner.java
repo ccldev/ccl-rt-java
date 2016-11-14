@@ -1,7 +1,6 @@
 package ccl.rt.use;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,19 +11,24 @@ import ccl.rt.Tool;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.store.Variable;
+import ccl.rt.vm.Factory;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
 import ccl.rt.Expression;
 
 public class MnemoRunner implements Runner {
 
+	private Func<String, Factory<InputStream>> streamMaker;
+	
 	private HashMap<String, Integer> marks;
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
 	private Value retVal;
 	private boolean executed;
 	
-	public MnemoRunner(){
+	public MnemoRunner(Func<String, Factory<InputStream>> function){
+		this.streamMaker = function;
+		
 		marks = new HashMap<String, Integer>();
 		instructions = new ArrayList<String>();
 		arguments = new ArrayList<String>();
@@ -71,7 +75,7 @@ public class MnemoRunner implements Runner {
 		case "oldscope": vm.cScope(); break;
 		case "putS": vm.s(args); break;
 		case "putA": vm.a(Integer.parseInt(args)); break;
-		case "putM": vm.m(this.create(), new FileStreamFactory(new File(args))); break;
+		case "putM": vm.m(this.create(), streamMaker.call(args)); break;
 		case "get": vm.put(vm.pop().getProperty(args)); break;
 		case "duplicate": vm.dup(); break;
 		case "pop":
@@ -120,7 +124,7 @@ public class MnemoRunner implements Runner {
 
 	@Override
 	public Runner create() {
-		return new MnemoRunner();
+		return new MnemoRunner(streamMaker);
 	}
 
 }

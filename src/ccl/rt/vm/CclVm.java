@@ -25,6 +25,10 @@ public class CclVm implements IVM {
 		initSpec();
 	}
 	
+	public void setVariable(String name, Object value){
+		s.load(name).setValue(new Expression(value));
+	}
+	
 	private void initSpec() {
 		s.load("java").setValue(new Func(){
 			@Override
