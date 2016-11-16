@@ -8,6 +8,10 @@ import ccl.rt.err.Err;
 
 public class Environment {
 	
+	public static Value regex(Value regex){
+		return new Expression(new Regex(regex.getValue().toString()));
+	}
+	
 	public static Err error(Value v){
 		return new Err(v);
 	}

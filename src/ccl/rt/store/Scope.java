@@ -57,6 +57,12 @@ public class Scope {
 				return Environment.char_(args[0]);
 			}
 		});
+		variables.put("regex", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.regex(args[0]);
+			}
+		});
 	}
 	private Scope(Scope parent){
 		this.parent = parent;
