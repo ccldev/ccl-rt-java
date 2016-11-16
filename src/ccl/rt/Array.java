@@ -2,7 +2,6 @@ package ccl.rt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import ccl.rt.err.Err;
 
@@ -44,6 +43,14 @@ public class Array {
 	
 	public void pushValue(Value v){
 		base.add(v);
+	}
+	
+	public Array cut(int skip){
+		Array ret = new Array(0);
+		for(int i = skip; i < length(); i++){
+			ret.pushValue(getExpression(i));
+		}
+		return ret;
 	}
 	
 	public String toString(){

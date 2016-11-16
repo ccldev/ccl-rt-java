@@ -32,6 +32,9 @@ public class Variable implements Value{
 
 	@Override
 	public Value getProperty(String name) {
+		if(name.equals("_")){
+			return val();
+		}
 		return val().getProperty(name);
 	}
 

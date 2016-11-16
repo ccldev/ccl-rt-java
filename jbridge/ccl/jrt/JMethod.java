@@ -1,8 +1,6 @@
 package ccl.jrt;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
+import ccl.rt.Array;
 import ccl.rt.Value;
 import ccl.rt.Expression;
 
@@ -21,7 +19,9 @@ public class JMethod {
 		Object[] arr = new Object[args.length];
 		for(int i = 0; i < ptypes.length; i++){
 			if(ptypes[i].isPrimitive()){
-				castPrimitive(i, arr, ptypes[i].getSimpleName(), args[0].getValue());
+				castPrimitive(i, arr, ptypes[i].getSimpleName(), args[i].getValue());
+			}else if(ptypes[i].isArray() && args[i].getValue() instanceof Array){
+				arr[i] = JArray.cast(ptypes[i], (Array) args[i].getValue());
 			}else{
 				arr[i] = ptypes[i].cast(args[i].getValue());
 			}
