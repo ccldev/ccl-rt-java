@@ -71,6 +71,11 @@ public class MnemoRunner implements Runner {
 			Value v = vm.pop();
 			((Variable) vm.pop()).setValue(v);
 			break;
+		case "store1":
+			Variable var = (Variable) vm.pop();
+			Value value = vm.pop();
+			var.setValue(value);
+			break;
 		case "newscope": vm.oScope(); break;
 		case "oldscope": vm.cScope(); break;
 		case "putS": vm.s(args); break;
