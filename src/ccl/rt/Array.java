@@ -53,6 +53,10 @@ public class Array {
 		return ret;
 	}
 	
+	public Value setValue(int index, Value v){
+		return base.set(index,v);
+	}
+	
 	public String toString(){
 		Object[] arr = new Object[base.size()];
 		for(int i = 0; i < arr.length; i++){

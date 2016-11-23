@@ -149,6 +149,14 @@ public class Expression implements Value {
 					return Expression.this.getProperty(args[0].getValue() + "");
 				}
 			};
+		case "setProperty":
+			return new Func() {
+				@Override
+				public Value invoke(Value... args) {
+					Expression.this.setProperty(args[0].getValue() + "", args[1]);
+					return new Expression(Special.UNDEFINED);
+				}
+			};
 		case "type":
 			return new Expression(computeType());
 		case "properties":

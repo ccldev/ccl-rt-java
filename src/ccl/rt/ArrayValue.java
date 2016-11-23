@@ -19,6 +19,12 @@ public class ArrayValue extends Expression {
 				return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
 			}
 		});
+		setProperty("set", new Func(){
+			@Override
+			public Value invoke(Value... args) {
+				return ((Array) ArrayValue.this.getValue()).setValue(((Number) args[0].getValue()).intValue(), args[1]);
+			}
+		});
 	}
 	
 	public ArrayValue(int size) {
