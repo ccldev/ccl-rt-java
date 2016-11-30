@@ -66,7 +66,7 @@ public class MnemoRunner implements Runner {
 		case "goto": return marks.get(args);
 		case "load": vm.load(args); break;
 		case "putI": vm.i(args); break;
-		case "invoke": invoke(args.split(" "), vm); break;
+		case "invoke": invoke(args, vm); break;
 		case "store":
 			Value v = vm.pop();
 			((Variable) vm.pop()).setValue(v);
@@ -107,12 +107,8 @@ public class MnemoRunner implements Runner {
 		return -1;
 	}
 
-	private void invoke(String[] split, IVM vm) throws Exception {
-		int params = Integer.parseInt(split[0]);
-		if(split.length >= 2){
-			throw new RuntimeException("Warning: invoke should be used with 1 parameter!");
-		}
-		vm.call(params);
+	private void invoke(String count, IVM vm) throws Exception {
+		vm.call(Integer.parseInt(count));
 	}
 
 	private void creation(int line, String[] split) {
