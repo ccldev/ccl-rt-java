@@ -2,6 +2,7 @@ package ccl.rt.vm;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
@@ -14,22 +15,57 @@ import ccl.rt.store.Scope;
 
 public class CclVm implements IVM {
 
-	private Scope s;
-	private ArrayList<Value> ram;
+	private HashMap<Thread,Scope> scopes;
+	
+	private Scope glob;
+	
+	private HashMap<Thread,ArrayList<Value>> rams;
+	
+	private ArrayList<Value> ram(){
+		Thread t = Thread.currentThread();
+		ArrayList<Value> ret = rams.get(t);
+		if(ret != null){
+			return ret;
+		}else{
+			ArrayList<Value> n = new ArrayList<Value>();
+			rams.put(t,n);
+			return n;
+		}
+	}
+	private void setRam(ArrayList<Value> ram){
+		rams.put(Thread.currentThread(), ram);
+	}
+	private Scope scope(){
+		Thread t = Thread.currentThread();
+		Scope ret = scopes.get(t);
+		if(ret != null){
+			return ret;
+		}else{
+			Scope n = glob.chain();
+			scopes.put(t,n);
+			return n;
+		}
+	}
+	private void setScope(Scope s){
+		scopes.put(Thread.currentThread(), s);
+	}
 	
 	public CclVm(){
-		s = new Scope();
-		ram = new ArrayList<Value>();
+		glob = new Scope();
 		
-		initStd();
-		initSpec();
+		initStd(glob);
+		initSpec(glob);
+		
+		rams = new HashMap<Thread,ArrayList<Value>>();
+		scopes = new HashMap<Thread,Scope>();
+		scopes.put(Thread.currentThread(), glob);
 	}
 	
 	public void setVariable(String name, Object value){
-		s.load(name).setValue(new Expression(value));
+		scope().load(name).setValue(new Expression(value));
 	}
 	
-	private void initSpec() {
+	private void initSpec(Scope s) {
 		s.load("java").setValue(new Func(){
 			@Override
 			public Value invoke(Value... args) {
@@ -43,24 +79,24 @@ public class CclVm implements IVM {
 		s.load("scope").setValue(new ScopeVal(s));
 	}
 
-	private void initStd() {
+	private void initStd(Scope s) {
 		s.load("false").setValue(new Expression(false));
 		s.load("true").setValue(new Expression(true));
 	}
 
 	@Override
 	public void cScope() {
-		s = s.parent();
+		setScope(scope().parent());
 	}
 
 	@Override
 	public void oScope() {
-		s = s.chain();
+		setScope(scope().chain());
 	}
 
 	@Override
 	public void s(String string) {
-		ram.add(new Expression(prepare(string)));
+		ram().add(new Expression(prepare(string)));
 	}
 
 	private String prepare(String string) {
@@ -90,12 +126,12 @@ public class CclVm implements IVM {
 
 	@Override
 	public void f(String floatn) {
-		ram.add(new Expression(Double.parseDouble(floatn)));
+		ram().add(new Expression(Double.parseDouble(floatn)));
 	}
 
 	@Override
 	public void i(String integer) {
-		ram.add(new Expression(Long.parseLong(integer)));
+		ram().add(new Expression(Long.parseLong(integer)));
 	}
 
 	@Override
@@ -106,19 +142,19 @@ public class CclVm implements IVM {
 			public Value invoke(Value... args) {
 				ArrayValue arr = new ArrayValue(new Array(args));
 				
-				s = s.chain();
-				s.reserve("parameters");
-				s.load("parameters").setValue(arr);
-				ArrayList<Value> oldRam = ram;
-				ram = new ArrayList<Value>();
+				setScope(scope().chain());
+				scope().reserve("parameters");
+				scope().load("parameters").setValue(arr);
+				ArrayList<Value> oldRam = ram();
+				setRam(new ArrayList<Value>());
 				Value v;
 				try {
 					v = r.create().execute(f.make(), CclVm.this);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-				ram = oldRam;
-				s = s.parent();
+				setRam(oldRam);
+				setScope(scope().parent());
 				return v;
 			}
 			
@@ -138,32 +174,32 @@ public class CclVm implements IVM {
 		
 		try{
 			Value v = method.invoke(args);
-			ram.add(v);
+			ram().add(v);
 		}catch(RuntimeException e){
-			ram.add(new Err(e));
+			ram().add(new Err(e));
 		}
 	}
 
 	@Override
 	public void dup() {
 		Value a = pop();
-		ram.add(a);
-		ram.add(a);
+		ram().add(a);
+		ram().add(a);
 	}
 
 	@Override
 	public Value pop() {
-		return ram.remove(ram.size() - 1);
+		return ram().remove(ram().size() - 1);
 	}
 
 	@Override
 	public void load(String var) {
-		ram.add(s.load(var));
+		ram().add(scope().load(var));
 	}
 
 	@Override
 	public void put(Value v) {
-		ram.add(v);
+		ram().add(v);
 	}
 
 	@Override
@@ -173,7 +209,7 @@ public class CclVm implements IVM {
 
 	@Override
 	public void reserve(String var) {
-		put(s.reserve(var));
+		put(scope().reserve(var));
 	}
 
 }
