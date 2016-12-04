@@ -7,6 +7,7 @@ import ccl.rt.Func;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.lib.Environment;
+import ccl.rt.thread.ThreadDataExpression;
 
 public class Scope {
 	
@@ -15,6 +16,7 @@ public class Scope {
 	
 	{
 		variables = new HashMap<String, Value>();
+		variables.put("thread",new ThreadDataExpression(Thread.currentThread()));
 	}
 	
 	public Scope(){

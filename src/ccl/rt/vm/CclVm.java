@@ -12,6 +12,8 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Spec;
 import ccl.rt.store.Scope;
+import ccl.rt.thread.ThreadData;
+import ccl.rt.thread.ThreadDataExpression;
 
 public class CclVm implements IVM {
 
