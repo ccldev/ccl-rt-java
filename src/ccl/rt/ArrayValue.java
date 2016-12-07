@@ -25,6 +25,16 @@ public class ArrayValue extends Expression {
 				return ((Array) ArrayValue.this.getValue()).setValue(((Number) args[0].getValue()).intValue(), args[1]);
 			}
 		});
+		setProperty("cut", new Func(){
+
+			@Override
+			public Value invoke(Value... args) {
+				return new ArrayValue(
+					((Array) ArrayValue.this.getValue()).cut(((Number) args[0].getValue()).intValue())
+				);
+			}
+			
+		});
 	}
 	
 	public ArrayValue(int size) {
