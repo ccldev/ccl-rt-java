@@ -53,6 +53,21 @@ public class Array {
 		return ret;
 	}
 	
+	public Value operate(String op){
+		if(base.size() == 0){
+			return new Expression(Special.UNDEFINED);
+		}
+		Value v = base.get(0);
+		for(int i = 1; i < base.size(); i++){
+			try {
+				v = v.getProperty(op).invoke(base.get(i));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return v;
+	}
+	
 	public Value setValue(int index, Value v){
 		return base.set(index,v);
 	}

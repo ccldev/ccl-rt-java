@@ -35,6 +35,22 @@ public class ArrayValue extends Expression {
 			}
 			
 		});
+		setProperty("add", new Func(){
+
+			@Override
+			public Value invoke(Value... args) {
+				return ((Array) ArrayValue.this.getValue()).operate("add");
+			}
+			
+		});
+		setProperty("mul", new Func(){
+
+			@Override
+			public Value invoke(Value... args) {
+				return ((Array) ArrayValue.this.getValue()).operate("mul");
+			}
+			
+		});
 	}
 	
 	public ArrayValue(int size) {
