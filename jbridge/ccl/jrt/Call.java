@@ -19,7 +19,7 @@ public class Call {
 
 			@Override
 			public int getParameterCount() {
-				return c.getParameterCount();
+				return getParameterTypes().length;
 			}
 		};
 	}
@@ -38,7 +38,7 @@ public class Call {
 
 			@Override
 			public int getParameterCount() {
-				return m.getParameterCount();
+				return getParameterTypes().length;
 			}
 		};
 	}
