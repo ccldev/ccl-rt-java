@@ -24,7 +24,6 @@ public class MnemoRunner implements Runner {
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
 	private Value retVal;
-	private boolean executed;
 	
 	public MnemoRunner(Func<String, Factory<InputStream>> function){
 		this.streamMaker = function;
@@ -36,11 +35,6 @@ public class MnemoRunner implements Runner {
 	
 	@Override
 	public Value execute(InputStream cclCode, IVM vm) {
-		if(executed){
-			System.err.println("Warning: a runner should not be executed more then once normally!");
-			new RuntimeException("DEBUG, do not panic :)").printStackTrace(System.out);
-		}
-		executed = true;
 		Scanner s = new Scanner(cclCode);
 		int line = 0;
 		while(s.hasNextLine()){
