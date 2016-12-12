@@ -35,6 +35,8 @@ public class MnemoRunner implements Runner {
 	
 	@Override
 	public Value execute(InputStream cclCode, IVM vm) {
+		retVal = null;
+		
 		Scanner s = new Scanner(cclCode);
 		int line = 0;
 		while(s.hasNextLine()){
