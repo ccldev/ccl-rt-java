@@ -77,6 +77,13 @@ public class CclVm implements IVM {
 			}
 		});
 		s.load("scope").setValue(new ScopeVal(s));
+		try{
+			s.load("eval").setValue((Value) Class.forName("coalang.runtime.scripting.EvalSetup")
+					.getMethod("reflectEvalSupport").invoke(null));
+		}catch(Exception e){
+			System.err.println("Scripting library not found!");
+			System.out.println(e);
+		}
 	}
 
 	private void initStd(Scope s) {

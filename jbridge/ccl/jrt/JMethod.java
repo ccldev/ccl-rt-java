@@ -1,6 +1,10 @@
 package ccl.jrt;
 
+import java.lang.reflect.Proxy;
+import java.util.Arrays;
+
 import ccl.rt.Array;
+import ccl.rt.Func;
 import ccl.rt.Value;
 import ccl.rt.Expression;
 
@@ -23,6 +27,17 @@ public class JMethod {
 			}else if(ptypes[i].isArray() && args[i].getValue() instanceof Array){
 				arr[i] = JArray.cast(ptypes[i], (Array) args[i].getValue());
 			}else{
+				if(ptypes[i].isInterface()){
+					if(!ptypes[i].isInstance(args[i].getValue()) && args[i] instanceof Func){
+						if(ptypes[i].getDeclaredMethods().length == 1){
+							Class<?> iface = ptypes[i];
+							String name = iface.getDeclaredMethods()[0].getName();
+							System.out.println(ptypes[i].toString() + " is a functional interface! " + name);
+							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(name, args[i]));
+							continue;
+						}
+					}
+				}
 				arr[i] = ptypes[i].cast(args[i].getValue());
 			}
 		}
