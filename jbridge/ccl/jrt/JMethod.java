@@ -32,7 +32,6 @@ public class JMethod {
 						if(ptypes[i].getDeclaredMethods().length == 1){
 							Class<?> iface = ptypes[i];
 							String name = iface.getDeclaredMethods()[0].getName();
-							System.out.println(ptypes[i].toString() + " is a functional interface! " + name);
 							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(name, args[i]));
 							continue;
 						}

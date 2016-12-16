@@ -80,10 +80,7 @@ public class CclVm implements IVM {
 		try{
 			s.load("eval").setValue((Value) Class.forName("coalang.runtime.scripting.EvalSetup")
 					.getMethod("reflectEvalSupport").invoke(null));
-		}catch(Exception e){
-			System.err.println("Scripting library not found!");
-			System.out.println(e);
-		}
+		}catch(Exception e){}
 	}
 
 	private void initStd(Scope s) {
