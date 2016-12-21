@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import coa.std.NVPValue;
+
 import ccl.jrt.JClass;
 import ccl.jrt.JExpression;
 import ccl.rt.err.Err;
@@ -45,6 +47,7 @@ public class Expression implements Value {
 		propList.add("type");
 		propList.add("properties");
 		propList.add("property");
+		propList.add("extend");
 	}
 
 	public Value getProperty(String name) {
@@ -112,6 +115,20 @@ public class Expression implements Value {
 				};
 			}
 		}
+		
+		if(computeType().equals("string")){
+			switch(name){
+			case "nvp":
+				return new Func() {
+
+					@Override
+					public Value invoke(Value... args) {
+						return new NVPValue(Expression.this.getValue().toString(), args[0]);
+					}
+					
+				};
+			}
+		}
 
 		switch (name) {
 		case "bind":
@@ -161,6 +178,35 @@ public class Expression implements Value {
 			return new Expression(computeType());
 		case "properties":
 			return new ArrayValue(Array.clone(propList.toArray(new String[0])));
+		case "extend":
+			return new Func(){
+
+				@Override
+				public Value invoke(Value... args) {
+					
+					final Expression base = Expression.this;
+					final Value[] extensions = args;
+					return new Func(){
+
+						@Override
+						public Value invoke(Value... args) {
+							try {
+								Value a = base.invoke(args);
+								for(int i = 0; i < extensions.length; i++){
+									extensions[i].invoke(Tool.link(0, new Value[]{a}, args));
+								}
+								return a;
+							} catch (Exception e) {
+								return new Err(e);
+							}
+							
+						}
+						
+					};
+					
+				}
+				
+			};
 		}
 
 		return new JExpression(value == null ? Special.UNDEFINED : value, value == null ? Special.class : value.getClass(),

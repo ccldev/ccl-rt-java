@@ -1,6 +1,7 @@
 package ccl.jrt;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 
 import ccl.rt.Expression;
 import ccl.rt.Func;
@@ -29,6 +30,7 @@ public class JClass extends Expression {
 					.getConstructors()), new Value[] { new Expression(
 					new JInvocationHandler(args[0])) });
 		}
+		
 		return J.invoke(null, Call.pack(clss.getConstructors()), args);
 	}
 

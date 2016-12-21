@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import coa.std.NVP;
+
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
@@ -176,14 +178,34 @@ public class CclVm implements IVM {
 		}
 		method = pop();
 		
+		ArrayList<Value> params = new ArrayList<Value>();
+		ArrayList<Value> settings = new ArrayList<Value>();
+		
+		for(int i = 0; i < args.length; i++){
+			Value v = args[i];
+			if(v.getValue() instanceof NVP){
+				settings.add(v);
+			}else{
+				params.add(v);
+			}
+		}
+		
+		args = params.toArray(new Value[0]);
+		
 		try{
 			Value v = method.invoke(args);
+			prepareCallResult(v, settings);
 			ram().add(v);
 		}catch(RuntimeException e){
 			ram().add(new Err(e));
 		}
 	}
 
+	private void prepareCallResult(Value v, ArrayList<Value> settings) throws Exception {
+		for(int i = 0; i < settings.size(); i++){
+			settings.get(i).invoke(v);
+		}
+	}
 	@Override
 	public void dup() {
 		Value a = pop();

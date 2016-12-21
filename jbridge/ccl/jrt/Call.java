@@ -28,7 +28,11 @@ public class Call {
 		return new ICallable(){
 			@Override
 			public Object invoke(Object o, Object[] args) throws Exception {
-				return m.invoke(o, args);
+				Object r = m.invoke(o, args);
+				if(r == null){
+					return o;
+				}
+				return r;
 			}
 			
 			@Override
