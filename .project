@@ -14,4 +14,21 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>coaLib</name>
+			<type>2</type>
+			<location>F:/Info/CCL/CoaLib/src</location>
+		</link>
+		<link>
+			<name>coaReflect</name>
+			<type>2</type>
+			<location>F:/Info/CCL/CoaReflect/src</location>
+		</link>
+		<link>
+			<name>interfaceWorld</name>
+			<type>2</type>
+			<location>F:/Info/CCL/InterfaceWorld/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

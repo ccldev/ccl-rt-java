@@ -1,5 +1,7 @@
 package ccl.rt;
 
+import io.github.coalangsoft.reflect.Clss;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -209,7 +211,7 @@ public class Expression implements Value {
 			};
 		}
 
-		return new JExpression(value == null ? Special.UNDEFINED : value, value == null ? Special.class : value.getClass(),
+		return new JExpression(value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
 				name);
 	}
 

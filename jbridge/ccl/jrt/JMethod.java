@@ -1,7 +1,8 @@
 package ccl.jrt;
 
+import io.github.coalangsoft.reflect.Clss;
+
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 
 import ccl.rt.Array;
 import ccl.rt.Func;
@@ -19,25 +20,25 @@ public class JMethod {
 	}
 
 	public Value call(Value[] args) throws Exception {
-		Class<?>[] ptypes = method.getParameterTypes();
+		Clss[] ptypes = method.getParameterTypes().getRaw();
 		Object[] arr = new Object[args.length];
 		for(int i = 0; i < ptypes.length; i++){
 			if(ptypes[i].isPrimitive()){
 				castPrimitive(i, arr, ptypes[i].getSimpleName(), args[i].getValue());
 			}else if(ptypes[i].isArray() && args[i].getValue() instanceof Array){
-				arr[i] = JArray.cast(ptypes[i], (Array) args[i].getValue());
+				arr[i] = JArray.cast(ptypes[i].base, (Array) args[i].getValue());
 			}else{
 				if(ptypes[i].isInterface()){
 					if(!ptypes[i].isInstance(args[i].getValue()) && args[i] instanceof Func){
-						if(ptypes[i].getDeclaredMethods().length == 1){
-							Class<?> iface = ptypes[i];
+						if(ptypes[i].method(null).listSpecific(object, true).count() == 1){
+							Class<?> iface = ptypes[i].base;
 							String name = iface.getDeclaredMethods()[0].getName();
 							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(name, args[i]));
 							continue;
 						}
 					}
 				}
-				arr[i] = ptypes[i].cast(args[i].getValue());
+				arr[i] = ptypes[i].base.cast(args[i].getValue());
 			}
 		}
 		return new Expression(method.invoke(object, (Object[]) arr));

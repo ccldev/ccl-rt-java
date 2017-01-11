@@ -11,7 +11,7 @@ public class NVPValue extends Expression {
 	
 	public Value getProperty(String name){
 		if(name.equals("getValue")){
-			return ((NVP) getValue()).getValue();
+			return ((NVP) getValue()).getB();
 		}else{
 			return super.getProperty(name);
 		}

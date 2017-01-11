@@ -1,7 +1,8 @@
 package ccl.jrt;
 
+import io.github.coalangsoft.reflect.Clss;
+
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 
 import ccl.rt.Expression;
 import ccl.rt.Func;
@@ -9,9 +10,9 @@ import ccl.rt.Value;
 
 public class JClass extends Expression {
 
-	private Class<?> clss;
+	private Clss clss;
 
-	public JClass(Class<?> value) {
+	public JClass(Clss value) {
 		super(value);
 		clss = value;
 	}
@@ -19,19 +20,24 @@ public class JClass extends Expression {
 	public Value getProperty(String name) {
 		if (getProperties().contains(name)) {
 			return super.getProperty(name);
+		}else{
+			Clss inner = clss.getDeclaredClasses().bySimpleName(name);
+			if(inner != null){
+				return new JClass(inner);
+			}
 		}
 		return new JExpression(null, clss, name);
 	}
 
 	public Value invoke(Value... args) {
-		if (clss.isInterface()) {
+		if (clss.base.isInterface()) {
 			return J.invoke(null, Call.pack(Proxy.getProxyClass(
-					clss.getClassLoader(), new Class[] { clss })
+					ClassLoader.getSystemClassLoader(), new Class[] { clss.base })
 					.getConstructors()), new Value[] { new Expression(
 					new JInvocationHandler(args[0])) });
 		}
 		
-		return J.invoke(null, Call.pack(clss.getConstructors()), args);
+		return J.invoke(null, Call.pack(clss.base.getConstructors()), args);
 	}
 
 }

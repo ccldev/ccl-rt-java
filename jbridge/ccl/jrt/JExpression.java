@@ -1,5 +1,9 @@
 package ccl.jrt;
 
+import io.github.coalangsoft.reflect.Clss;
+import io.github.coalangsoft.reflect.Methods;
+import io.github.coalangsoft.reflect.SpecificMethods;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -13,20 +17,19 @@ import ccl.rt.err.Err;
 public class JExpression extends Expression {
 
 	private Object object;
-	private Method[] methods;
+	private SpecificMethods methods;
 	private JClass innerClass;
-	private Class<?> clss;
+	private Clss clss;
 	
-	public JExpression(Object o, Class<?> c, String name) {
+	public JExpression(Object o, Clss c, String name) {
 		super(Special.INVALID);
 		
 		this.object = o;
 		this.clss = c;
-		Method[] m = getMethods(name);
 		Field f = getField(name);
-		this.methods = m;
+		this.methods = getMethods(name);
 
-		Class<?>[] classes = c.getDeclaredClasses();
+		Clss[] classes = c.getDeclaredClasses().getRaw();
 		for(int i = 0; i < classes.length; i++){
 			if(classes[i].getSimpleName().equals(name)){
 				innerClass = new JClass(classes[i]);
@@ -34,7 +37,7 @@ public class JExpression extends Expression {
 			}
 		}
 		
-		if (m.length == 0 && f == null && innerClass == null) {
+		if (methods.count() == 0 && f == null && innerClass == null) {
 			setValue(new Err(new RuntimeException("No such native property '"
 					+ name + "' on Object " + o)));
 			return;
@@ -54,28 +57,21 @@ public class JExpression extends Expression {
 
 	private Field getField(String name) {
 		try {
-			return clss.getField(name);
+			return clss.base.getField(name);
 		} catch (NoSuchFieldException | SecurityException e) {
 			return null;
 		}
 	}
 
-	private Method[] getMethods(String name) {
-		Method[] ms = clss.getMethods();
-		ArrayList<Method> list = new ArrayList<Method>();
-		for (int i = 0; i < ms.length; i++) {
-			if (ms[i].getName().equals(name)) {
-				list.add(ms[i]);
-			}
-		}
-		return list.toArray(new Method[0]);
+	private SpecificMethods getMethods(String name) {
+		return clss.method(name).listSpecific(object, false);
 	}
 
 	public Value invoke(Value... args) throws Exception {
 		if(innerClass != null){
 			return innerClass.invoke(args);
 		}
-		if (methods.length == 0) {
+		if (methods.count() == 0) {
 			return super.invoke(args);
 		} else {
 			return J.invoke(object, Call.pack(methods), args);

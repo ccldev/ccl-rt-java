@@ -1,14 +1,14 @@
 package coa.std;
 
-import ccl.rt.Array;
-import ccl.rt.ArrayValue;
+import io.github.coalangsoft.lib.data.Pair;
+
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 
-public class NVP extends Func{
+public class NVP extends Func implements Pair<String, Value>{
 	
 	private String name;
 	private Value value;
@@ -18,10 +18,10 @@ public class NVP extends Func{
 		this.value = value;
 	}
 	
-	public String getName(){
+	public String getA(){
 		return name;
 	}
-	public Value getValue(){
+	public Value getB(){
 		return value;
 	}
 	

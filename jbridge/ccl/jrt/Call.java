@@ -1,5 +1,9 @@
 package ccl.jrt;
 
+import io.github.coalangsoft.reflect.ClassSequence;
+import io.github.coalangsoft.reflect.SpecificMethod;
+import io.github.coalangsoft.reflect.SpecificMethods;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
@@ -13,22 +17,22 @@ public class Call {
 			}
 
 			@Override
-			public Class<?>[] getParameterTypes() {
-				return c.getParameterTypes();
+			public ClassSequence getParameterTypes() {
+				return ClassSequence.make(c.getParameterTypes());
 			}
 
 			@Override
 			public int getParameterCount() {
-				return getParameterTypes().length;
+				return getParameterTypes().length();
 			}
 		};
 	}
 	
-	public static ICallable make(final Method m){
+	public static ICallable make(final SpecificMethod m){
 		return new ICallable(){
 			@Override
 			public Object invoke(Object o, Object[] args) throws Exception {
-				Object r = m.invoke(o, args);
+				Object r = m.call(args);
 				if(r == null){
 					return o;
 				}
@@ -36,21 +40,21 @@ public class Call {
 			}
 			
 			@Override
-			public Class<?>[] getParameterTypes() {
+			public ClassSequence getParameterTypes() {
 				return m.getParameterTypes();
 			}
 
 			@Override
 			public int getParameterCount() {
-				return getParameterTypes().length;
+				return getParameterTypes().length();
 			}
 		};
 	}
 
-	public static ICallable[] pack(Method[] methods) {
-		ICallable[] ret = new ICallable[methods.length];
-		for(int i = 0; i < methods.length; i++){
-			ret[i] = make(methods[i]);
+	public static ICallable[] pack(SpecificMethods methods) {
+		ICallable[] ret = new ICallable[methods.count()];
+		for(int i = 0; i < methods.count(); i++){
+			ret[i] = make(methods.get(i));
 		}
 		return ret;
 	}

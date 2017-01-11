@@ -1,5 +1,7 @@
 package ccl.rt.use;
 
+import io.github.coalangsoft.lib.data.Func;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,7 +9,7 @@ import java.io.InputStream;
 
 import ccl.rt.vm.Factory;
 
-public class FileStreamFactory implements Factory<InputStream> {
+public class FileStreamFactory implements Func<Void, InputStream> {
 
 	private File f;
 
@@ -16,8 +18,12 @@ public class FileStreamFactory implements Factory<InputStream> {
 	}
 	
 	@Override
-	public InputStream make() throws FileNotFoundException {
-		return new FileInputStream(f);
+	public InputStream call(Void v) {
+		try {
+			return new FileInputStream(f);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
