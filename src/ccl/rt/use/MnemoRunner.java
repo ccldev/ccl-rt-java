@@ -60,7 +60,7 @@ public class MnemoRunner implements Runner {
 	private int execution(int line, String instr, String args, IVM vm) throws Exception {
 		switch(instr){
 		case "mark": break;
-		case "if": return (Boolean) (vm.pop().getValue()) ? marks.get(args) : line+1;
+		case "if": return ((Number) vm.pop().getValue()).intValue() == 1 ? marks.get(args) : line+1;
 		case "goto": return marks.get(args);
 		case "load": vm.load(args); break;
 		case "putI": vm.i(args); break;
@@ -94,6 +94,10 @@ public class MnemoRunner implements Runner {
 			return -1;
 		case "reserve":
 			vm.reserve(args);
+			break;
+		case "rap":
+			vm.reserve(args);
+			vm.pop();
 			break;
 		default: throw new RuntimeException("Unknown instr: " + instr);
 		}

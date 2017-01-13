@@ -28,6 +28,10 @@ public class Expression implements Value {
 	}
 
 	protected void setValue(Object value) {
+		if(value instanceof Boolean){
+			boolean b = (boolean) value;
+			value = b ? 1 : 0;
+		}
 		this.value = value;
 	}
 
@@ -36,7 +40,7 @@ public class Expression implements Value {
 	}
 	
 	public Expression(Object value) {
-		this.value = value;
+		setValue(value);
 		this.propList = new ArrayList<String>();
 		this.properties = new HashMap<String, Value>();
 		initBaseProperties();
@@ -221,6 +225,7 @@ public class Expression implements Value {
 		if (value instanceof Throwable)
 			return "error";
 		if (value instanceof Boolean){
+			System.err.println("RUNTIME WARNING: Type 'boolean' should not be used!");
 			return "boolean";
 		}
 		if (this instanceof JClass)

@@ -27,6 +27,8 @@ public class JMethod {
 				castPrimitive(i, arr, ptypes[i].getSimpleName(), args[i].getValue());
 			}else if(ptypes[i].isArray() && args[i].getValue() instanceof Array){
 				arr[i] = JArray.cast(ptypes[i].base, (Array) args[i].getValue());
+			}else if(ptypes[i].base == Boolean.class && args[i].getValue() instanceof Number){
+				arr[i] = ((Number)args[i].getValue()).intValue() == 1;
 			}else{
 				if(ptypes[i].isInterface()){
 					if(!ptypes[i].isInstance(args[i].getValue()) && args[i] instanceof Func){
@@ -57,7 +59,7 @@ public class JMethod {
 		case "double": arr[i] = ((Number) value).doubleValue(); break;
 		
 		case "char": arr[i] = ((Character) value).charValue(); break;
-		case "boolean": arr[i] = ((Boolean) value).booleanValue(); break;
+		case "boolean": arr[i] = ((Number) value).intValue() == 1; break;
 		
 		default: throw new Exception("Unknown primitive: " + type);
 		}
