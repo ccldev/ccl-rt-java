@@ -8,70 +8,80 @@ import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.lib.Environment;
 import ccl.rt.thread.ThreadDataExpression;
+import ccl.rt.vm.IVM;
 
 public class Scope {
 	
 	HashMap<String, Value> variables;
 	private Scope parent;
+	private IVM vm;
 	
-	{
+	
+	public Scope(IVM vm){
 		variables = new HashMap<String, Value>();
-		variables.put("thread",new ThreadDataExpression(Thread.currentThread()));
-	}
-	
-	public Scope(){
+		variables.put("thread",new ThreadDataExpression(vm, Thread.currentThread()));
+		this.vm = vm;
 		initGlobals();
 	}
 	private void initGlobals() {
-		variables.put("boolean", new Func(){
+		variables.put("boolean", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.boolean_(args[0]);
+				return Environment.boolean_(vm, args[0]);
 			}
 		});
-		variables.put("error", new Func(){
+		variables.put("error", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.error(args[0]);
+				return Environment.error(vm, args[0]);
 			}
 		});
-		variables.put("float", new Func(){
+		variables.put("float", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.float_(args[0]);
+				return Environment.float_(vm, args[0]);
 			}
 		});
-		variables.put("integer", new Func(){
+		variables.put("integer", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.integer(args[0]);
+				return Environment.integer(vm, args[0]);
 			}
 		});
-		variables.put("array", new Func(){
+		variables.put("char2int", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.array(args[0]);
+				return Environment.char2int(vm, args[0]);
 			}
 		});
-		variables.put("char", new Func(){
+		variables.put("array", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.char_(args[0]);
+				return Environment.array(vm, args[0]);
 			}
 		});
-		variables.put("regex", new Func(){
+		variables.put("char", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return Environment.regex(args[0]);
+				return Environment.char_(vm, args[0]);
+			}
+		});
+		variables.put("regex", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.regex(vm, args[0]);
 			}
 		});
 	}
-	private Scope(Scope parent){
+	private Scope(IVM vm, Scope parent){
+		this.vm = vm;
+		variables = new HashMap<String, Value>();
+		variables.put("thread",new ThreadDataExpression(vm, Thread.currentThread()));
 		this.parent = parent;
 	}
 	
 	public Scope chain(){
-		return new Scope(this);
+		return new Scope(vm, this);
 	}
 	
 	public Scope parent(){
@@ -126,7 +136,7 @@ public class Scope {
 	}
 	
 	public Variable reserve(String name) {
-		variables.put(name, new Expression(Special.UNDEFINED));
+		variables.put(name, new Expression(vm, Special.UNDEFINED));
 		return load(name);
 	}
 	

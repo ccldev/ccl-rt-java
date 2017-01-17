@@ -21,4 +21,8 @@ public interface IVM {
 	void put(Value property);
 	void reserve(String var);
 	
+	void sPut(String funcName);
+	String sPop();
+	int sSize();
+	
 }

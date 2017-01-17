@@ -55,7 +55,7 @@ public class MnemoRunner implements Runner {
 				throw new RuntimeException(e);
 			}
 		}
-		return new Expression(Special.UNDEFINED);
+		return new Expression(vm, Special.UNDEFINED);
 	}
 	private int execution(int line, String instr, String args, IVM vm) throws Exception {
 		switch(instr){
@@ -98,6 +98,12 @@ public class MnemoRunner implements Runner {
 		case "rap":
 			vm.reserve(args);
 			vm.pop();
+			break;
+		case "sPut":
+			vm.sPut(args);
+			break;
+		case "sPop":
+			vm.sPop();
 			break;
 		default: throw new RuntimeException("Unknown instr: " + instr);
 		}

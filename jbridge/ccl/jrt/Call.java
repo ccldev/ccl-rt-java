@@ -32,6 +32,7 @@ public class Call {
 		return new ICallable(){
 			@Override
 			public Object invoke(Object o, Object[] args) throws Exception {
+				m.setAccessible(true);
 				Object r = m.call(args);
 				if(r == null){
 					return o;

@@ -7,13 +7,16 @@ import java.lang.reflect.Proxy;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Value;
+import ccl.rt.vm.IVM;
 
 public class JClass extends Expression {
 
 	private Clss clss;
+	private IVM vm;
 
-	public JClass(Clss value) {
-		super(value);
+	public JClass(IVM vm, Clss value) {
+		super(vm, value);
+		this.vm = vm;
 		clss = value;
 	}
 
@@ -23,21 +26,21 @@ public class JClass extends Expression {
 		}else{
 			Clss inner = clss.getDeclaredClasses().bySimpleName(name);
 			if(inner != null){
-				return new JClass(inner);
+				return new JClass(vm, inner);
 			}
 		}
-		return new JExpression(null, clss, name);
+		return new JExpression(vm, null, clss, name);
 	}
 
 	public Value invoke(Value... args) {
 		if (clss.base.isInterface()) {
-			return J.invoke(null, Call.pack(Proxy.getProxyClass(
+			return J.invoke(vm, null, Call.pack(Proxy.getProxyClass(
 					ClassLoader.getSystemClassLoader(), new Class[] { clss.base })
-					.getConstructors()), new Value[] { new Expression(
-					new JInvocationHandler(args[0])) });
+					.getConstructors()), new Value[] { new Expression(vm, 
+					new JInvocationHandler(vm, args[0])) });
 		}
 		
-		return J.invoke(null, Call.pack(clss.base.getConstructors()), args);
+		return J.invoke(vm, null, Call.pack(clss.base.getConstructors()), args);
 	}
 
 }

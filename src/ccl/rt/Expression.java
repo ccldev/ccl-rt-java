@@ -12,6 +12,7 @@ import ccl.jrt.JClass;
 import ccl.jrt.JExpression;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Std;
+import ccl.rt.vm.IVM;
 
 public class Expression implements Value {
 	
@@ -19,6 +20,8 @@ public class Expression implements Value {
 
 	private ArrayList<String> propList;
 	private HashMap<String, Value> properties;
+
+	private IVM vm;
 
 	protected void setProperty(String name, Value value) {
 		if (!propList.contains(name)) {
@@ -39,8 +42,9 @@ public class Expression implements Value {
 		return properties.get(name) != null;
 	}
 	
-	public Expression(Object value) {
+	public Expression(IVM vm, Object value) {
 		setValue(value);
+		this.vm = vm;
 		this.propList = new ArrayList<String>();
 		this.properties = new HashMap<String, Value>();
 		initBaseProperties();
@@ -63,60 +67,55 @@ public class Expression implements Value {
 			return v;
 		}
 		
-		if (computeType().equals("boolean")){
-			switch (name){
-			case "not":
-				return new Func() {
-					@Override
-					public Value invoke(Value... args) {
-						return Std.not(Expression.this);
-					}
-				};
-			}
-		}
-		
 		if (computeType().equals("number")){
 			switch (name) {
-			case "lss":
-				return new Func() {
+			case "not":
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.lss(Expression.this, args[0]);
+						return Std.not(vm, Expression.this);
+					}
+				};
+			case "lss":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return Std.lss(vm, Expression.this, args[0]);
 					}
 				};
 			case "gtr":
-				return new Func() {
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.gtr(Expression.this, args[0]);
+						return Std.gtr(vm, Expression.this, args[0]);
 					}
 				};
 			case "add":
-				return new Func() {
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.add(Expression.this, args[0]);
+						return Std.add(vm, Expression.this, args[0]);
 					}
 				};
 			case "sub":
-				return new Func() {
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.sub(Expression.this, args[0]);
+						return Std.sub(vm, Expression.this, args[0]);
 					}
 				};
 			case "mul":
-				return new Func() {
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.mul(Expression.this, args[0]);
+						return Std.mul(vm, Expression.this, args[0]);
 					}
 				};
 			case "div":
-				return new Func() {
+				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
-						return Std.div(Expression.this, args[0]);
+						return Std.div(vm, Expression.this, args[0]);
 					}
 				};
 			}
@@ -125,11 +124,11 @@ public class Expression implements Value {
 		if(computeType().equals("string")){
 			switch(name){
 			case "nvp":
-				return new Func() {
+				return new Func(vm) {
 
 					@Override
 					public Value invoke(Value... args) {
-						return new NVPValue(Expression.this.getValue().toString(), args[0]);
+						return new NVPValue(vm, Expression.this.getValue().toString(), args[0]);
 					}
 					
 				};
@@ -138,61 +137,61 @@ public class Expression implements Value {
 
 		switch (name) {
 		case "bind":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return Std.bind(Expression.this, args);
+					return Std.bind(vm, Expression.this, args);
 				}
 			};
 		case "unbind":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return Std.unbind(Expression.this, args[0]);
+					return Std.unbind(vm, Expression.this, args[0]);
 				}
 			};
 		case "for":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return Std.for_(Expression.this, args);
+					return Std.for_(vm, Expression.this, args);
 				}
 			};
 		case "while":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return Std.while0(Expression.this, args[0]);
+					return Std.while0(vm, Expression.this, args[0]);
 				}
 			};
 		case "property":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
 					return Expression.this.getProperty(args[0].getValue() + "");
 				}
 			};
 		case "setProperty":
-			return new Func() {
+			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
 					Expression.this.setProperty(args[0].getValue() + "", args[1]);
-					return new Expression(Special.UNDEFINED);
+					return new Expression(vm, Special.UNDEFINED);
 				}
 			};
 		case "type":
-			return new Expression(computeType());
+			return new Expression(vm, computeType());
 		case "properties":
-			return new ArrayValue(Array.clone(propList.toArray(new String[0])));
+			return new ArrayValue(vm, Array.clone(vm, propList.toArray(new String[0])));
 		case "extend":
-			return new Func(){
+			return new Func(vm){
 
 				@Override
 				public Value invoke(Value... args) {
 					
 					final Expression base = Expression.this;
 					final Value[] extensions = args;
-					return new Func(){
+					return new Func(vm){
 
 						@Override
 						public Value invoke(Value... args) {
@@ -203,7 +202,7 @@ public class Expression implements Value {
 								}
 								return a;
 							} catch (Exception e) {
-								return new Err(e);
+								return new Err(vm, e);
 							}
 							
 						}
@@ -215,7 +214,7 @@ public class Expression implements Value {
 			};
 		}
 
-		return new JExpression(value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
+		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
 				name);
 	}
 
@@ -259,7 +258,7 @@ public class Expression implements Value {
 		} else if (args.length == 1) {
 			return getProperty(args[0].getValue() + "");
 		} else {
-			return new Err("Unsupported param count: " + args.length);
+			return new Err(vm, "Unsupported param count: " + args.length);
 		}
 	}
 

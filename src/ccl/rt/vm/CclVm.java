@@ -3,6 +3,7 @@ package ccl.rt.vm;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 import coa.std.NVP;
 
@@ -22,7 +23,19 @@ public class CclVm implements IVM {
 	private Scope glob;
 	
 	private HashMap<Thread,ArrayList<Value>> rams;
+	private HashMap<Thread,Stack<String>> stacks;
 	
+	private Stack<String> stack(){
+		Thread t = Thread.currentThread();
+		Stack<String> ret = stacks.get(t);
+		if(ret != null){
+			return ret;
+		}else{
+			Stack<String> n = new Stack<String>();
+			stacks.put(t,n);
+			return n;
+		}
+	}
 	private ArrayList<Value> ram(){
 		Thread t = Thread.currentThread();
 		ArrayList<Value> ret = rams.get(t);
@@ -53,32 +66,34 @@ public class CclVm implements IVM {
 	}
 	
 	public CclVm(){
-		glob = new Scope();
+		glob = new Scope(this);
 		
 		initStd(glob);
 		initSpec(glob);
 		
 		rams = new HashMap<Thread,ArrayList<Value>>();
+		stacks = new HashMap<Thread,Stack<String>>();
+		
 		scopes = new HashMap<Thread,Scope>();
 		scopes.put(Thread.currentThread(), glob);
 	}
 	
 	public void setVariable(String name, Object value){
-		scope().load(name).setValue(new Expression(value));
+		scope().load(name).setValue(new Expression(this, value));
 	}
 	
 	private void initSpec(Scope s) {
-		s.load("java").setValue(new Func(){
+		s.load("java").setValue(new Func(this){
 			@Override
 			public Value invoke(Value... args) {
 				try {
-					return Spec.java(args[0].getValue() + "");
+					return Spec.java(CclVm.this, args[0].getValue() + "");
 				} catch (ClassNotFoundException e) {
-					return new Err(e);
+					return new Err(CclVm.this, e);
 				}
 			}
 		});
-		s.load("scope").setValue(new ScopeVal(s));
+		s.load("scope").setValue(new ScopeVal(this, s));
 		try{
 			s.load("eval").setValue((Value) Class.forName("coalang.runtime.scripting.EvalSetup")
 					.getMethod("reflectEvalSupport").invoke(null));
@@ -86,8 +101,8 @@ public class CclVm implements IVM {
 	}
 
 	private void initStd(Scope s) {
-		s.load("false").setValue(new Expression(false));
-		s.load("true").setValue(new Expression(true));
+		s.load("false").setValue(new Expression(this, false));
+		s.load("true").setValue(new Expression(this, true));
 	}
 
 	@Override
@@ -102,7 +117,7 @@ public class CclVm implements IVM {
 
 	@Override
 	public void s(String string) {
-		ram().add(new Expression(prepare(string)));
+		ram().add(new Expression(this, prepare(string)));
 	}
 
 	private String prepare(String string) {
@@ -132,21 +147,21 @@ public class CclVm implements IVM {
 
 	@Override
 	public void f(String floatn) {
-		ram().add(new Expression(Double.parseDouble(floatn)));
+		ram().add(new Expression(this, Double.parseDouble(floatn)));
 	}
 
 	@Override
 	public void i(String integer) {
-		ram().add(new Expression(Long.parseLong(integer)));
+		ram().add(new Expression(this, Long.parseLong(integer)));
 	}
 
 	@Override
 	public void m(final Runner r, final Factory<InputStream> f) {
-		Func func = new Func(){
+		Func func = new Func(this){
 
 			@Override
 			public Value invoke(Value... args) {
-				ArrayValue arr = new ArrayValue(new Array(args));
+				ArrayValue arr = new ArrayValue(CclVm.this, new Array(CclVm.this, args));
 				
 				setScope(scope().chain());
 				scope().reserve("parameters");
@@ -197,7 +212,7 @@ public class CclVm implements IVM {
 			prepareCallResult(v, settings);
 			ram().add(v);
 		}catch(RuntimeException e){
-			ram().add(new Err(e));
+			ram().add(new Err(this, e));
 		}
 	}
 
@@ -230,12 +245,24 @@ public class CclVm implements IVM {
 
 	@Override
 	public void a(int size) {
-		put(new ArrayValue(size));
+		put(new ArrayValue(this, size));
 	}
 
 	@Override
 	public void reserve(String var) {
 		put(scope().reserve(var));
+	}
+	@Override
+	public void sPut(String funcName) {
+		stack().push(funcName);
+	}
+	@Override
+	public String sPop() {
+		return stack().pop();
+	}
+	@Override
+	public int sSize() {
+		return stack().size();
 	}
 
 }

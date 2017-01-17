@@ -7,110 +7,111 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
+import ccl.rt.vm.IVM;
 
 public class Std {
 	
-	public static Value lss(Value a, Value b){
+	public static Value lss(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 < b1);
+			return new Expression(vm, a1 < b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("lss").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 	
-	public static Value gtr(Value a, Value b){
+	public static Value gtr(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 > b1);
+			return new Expression(vm, a1 > b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("gtr").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 	
-	public static Value add(Value a, Value b){
+	public static Value add(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 + b1);
+			return new Expression(vm, a1 + b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("add").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 	
-	public static Value sub(Value a, Value b){
+	public static Value sub(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 - b1);
+			return new Expression(vm, a1 - b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("sub").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 	
-	public static Value mul(Value a, Value b){
+	public static Value mul(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 * b1);
+			return new Expression(vm, a1 * b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("mul").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 	
-	public static Value div(Value a, Value b){
+	public static Value div(IVM vm, Value a, Value b){
 		try{
 			double a1 = ((Number) a.getValue()).doubleValue();
 			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(a1 / b1);
+			return new Expression(vm, a1 / b1);
 		}catch(ClassCastException e){
 			try {
 				return b.getProperty("div").invoke(a);
 			} catch (Exception e1) {
-				return new Err(e1);
+				return new Err(vm, e1);
 			}
 		}
 	}
 
-	public static Value bind(Value func, Value[] args) {
-		return new BindFunc(func, args);
+	public static Value bind(IVM vm, Value func, Value[] args) {
+		return new BindFunc(vm, func, args);
 	}
 	
-	public static Value unbind(Value func, Value arg) {
-		return new UnbindFunc(func, ((Number) arg.getValue()).intValue());
+	public static Value unbind(IVM vm, Value func, Value arg) {
+		return new UnbindFunc(vm, func, ((Number) arg.getValue()).intValue());
 	}
 	
-	public static Value for_(Value func, Value[] args){
-		Array ret = new Array(0);
+	public static Value for_(IVM vm, Value func, Value[] args){
+		Array ret = new Array(vm, 0);
 		if(args.length == 1){
 			Array a = (Array) args[0].getValue();
 			for(int i = 0; i < a.length(); i++){
 				try {
 					ret.pushValue(func.invoke(a.getExpression(i)));
 				} catch (Exception e) {
-					ret.pushValue(new Err(e));
+					ret.pushValue(new Err(vm, e));
 				}
 			}
 		}else if(args.length == 2){
@@ -118,32 +119,32 @@ public class Std {
 			long b = ((Number) args[1].getValue()).longValue();
 			for(long i = a; i <= b; i++){
 				try {
-					ret.pushValue(func.invoke(new Expression(i)));
+					ret.pushValue(func.invoke(new Expression(vm, i)));
 				} catch (Exception e) {
-					ret.pushValue(new Err(e));
+					ret.pushValue(new Err(vm, e));
 				}
 			}
 		}else{
-			return new Err(new RuntimeException("Unexpected param count: " + args.length));
+			return new Err(vm, new RuntimeException("Unexpected param count: " + args.length));
 		}
-		return new ArrayValue(ret);
+		return new ArrayValue(vm, ret);
 	}
 
-	public static Value while0(Value func, Value condition) {
-		Array a = new Array(0);
+	public static Value while0(IVM vm, Value func, Value condition) {
+		Array a = new Array(vm, 0);
 		try {
-			while((Boolean) condition.invoke().getValue()){
+			while(((Number) condition.invoke().getValue()).intValue() == 1){
 				a.pushValue(func.invoke());
 			}
 		} catch (Exception e) {
-			return new Err(e);
+			return new Err(vm, e);
 		}
-		return new ArrayValue(a);
+		return new ArrayValue(vm, a);
 	}
 
-	public static Value not(Expression expression) {
-		boolean b = (boolean) expression.getValue();
-		return new Expression(!b);
+	public static Value not(IVM vm, Expression expression) {
+		int b = ((Number) expression.getValue()).intValue();
+		return new Expression(vm, b != 1);
 	}
 	
 }

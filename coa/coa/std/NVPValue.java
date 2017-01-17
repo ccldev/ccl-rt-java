@@ -2,11 +2,12 @@ package coa.std;
 
 import ccl.rt.Expression;
 import ccl.rt.Value;
+import ccl.rt.vm.IVM;
 
 public class NVPValue extends Expression {
 
-	public NVPValue(String name, Value val) {
-		super(new NVP(name, val));
+	public NVPValue(IVM vm, String name, Value val) {
+		super(vm, new NVP(vm, name, val));
 	}
 	
 	public Value getProperty(String name){

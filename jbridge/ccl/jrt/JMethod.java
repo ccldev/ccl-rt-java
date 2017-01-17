@@ -8,13 +8,16 @@ import ccl.rt.Array;
 import ccl.rt.Func;
 import ccl.rt.Value;
 import ccl.rt.Expression;
+import ccl.rt.vm.IVM;
 
 public class JMethod {
 
 	private ICallable method;
 	private Object object;
+	private IVM vm;
 
-	public JMethod(Object o, ICallable m) {
+	public JMethod(IVM vm, Object o, ICallable m) {
+		this.vm = vm;
 		this.method = m;
 		this.object = o;
 	}
@@ -35,7 +38,7 @@ public class JMethod {
 						if(ptypes[i].method(null).listSpecific(object, true).count() == 1){
 							Class<?> iface = ptypes[i].base;
 							String name = iface.getDeclaredMethods()[0].getName();
-							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(name, args[i]));
+							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(vm, name, args[i]));
 							continue;
 						}
 					}
@@ -43,7 +46,7 @@ public class JMethod {
 				arr[i] = ptypes[i].base.cast(args[i].getValue());
 			}
 		}
-		return new Expression(method.invoke(object, (Object[]) arr));
+		return new Expression(vm, method.invoke(object, (Object[]) arr));
 		
 	}
 

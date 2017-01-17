@@ -13,6 +13,7 @@ import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
+import ccl.rt.vm.IVM;
 
 public class JExpression extends Expression {
 
@@ -20,9 +21,11 @@ public class JExpression extends Expression {
 	private SpecificMethods methods;
 	private JClass innerClass;
 	private Clss clss;
+	private IVM vm;
 	
-	public JExpression(Object o, Clss c, String name) {
-		super(Special.INVALID);
+	public JExpression(IVM vm, Object o, Clss c, String name) {
+		super(vm, Special.INVALID);
+		this.vm = vm;
 		
 		this.object = o;
 		this.clss = c;
@@ -32,13 +35,13 @@ public class JExpression extends Expression {
 		Clss[] classes = c.getDeclaredClasses().getRaw();
 		for(int i = 0; i < classes.length; i++){
 			if(classes[i].getSimpleName().equals(name)){
-				innerClass = new JClass(classes[i]);
+				innerClass = new JClass(vm, classes[i]);
 				break;
 			}
 		}
 		
 		if (methods.count() == 0 && f == null && innerClass == null) {
-			setValue(new Err(new RuntimeException("No such native property '"
+			setValue(new Err(vm, new RuntimeException("No such native property '"
 					+ name + "' on Object " + o)));
 			return;
 		}
@@ -74,7 +77,7 @@ public class JExpression extends Expression {
 		if (methods.count() == 0) {
 			return super.invoke(args);
 		} else {
-			return J.invoke(object, Call.pack(methods), args);
+			return J.invoke(vm, object, Call.pack(methods), args);
 		}
 	}
 	

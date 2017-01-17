@@ -7,13 +7,17 @@ import ccl.rt.Func;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
+import ccl.rt.vm.IVM;
 
 public class NVP extends Func implements Pair<String, Value>{
 	
 	private String name;
 	private Value value;
+	private IVM vm;
 
-	public NVP(String name, Value value){
+	public NVP(IVM vm, String name, Value value){
+		super(vm);
+		this.vm = vm;
 		this.name = name;
 		this.value = value;
 	}
@@ -37,10 +41,10 @@ public class NVP extends Func implements Pair<String, Value>{
 			try {
 				args[i].getProperty(n).invoke(value);
 			} catch (Exception e) {
-				return new Err(e);
+				return new Err(vm, e);
 			}
 		}
-		return new Expression(Special.UNDEFINED);
+		return new Expression(vm, Special.UNDEFINED);
 	}
 	
 }

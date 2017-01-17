@@ -8,8 +8,8 @@ public class ScopeVal extends Expression {
 
 	private Scope scope;
 
-	public ScopeVal(Scope value) {
-		super(value);
+	public ScopeVal(IVM vm, Scope value) {
+		super(vm, value);
 		scope = value;
 	}
 	
