@@ -6,7 +6,8 @@ import ccl.rt.Value;
 
 public interface Runner {
 	
-	Value execute(InputStream cclCode, IVM vm);
+	Value execute(IVM vm);
 	Runner create();
+	void creation(InputStream cclCode);
 	
 }

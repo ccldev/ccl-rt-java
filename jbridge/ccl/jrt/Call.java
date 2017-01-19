@@ -53,9 +53,9 @@ public class Call {
 	}
 
 	public static ICallable[] pack(SpecificMethods methods) {
-		ICallable[] ret = new ICallable[methods.count()];
-		for(int i = 0; i < methods.count(); i++){
-			ret[i] = make(methods.get(i));
+		ICallable[] ret = new ICallable[methods.length()];
+		for(int i = 0; i < methods.length(); i++){
+			ret[i] = make(methods.at(i));
 		}
 		return ret;
 	}

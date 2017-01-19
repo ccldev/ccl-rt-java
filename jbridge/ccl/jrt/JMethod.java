@@ -35,7 +35,7 @@ public class JMethod {
 			}else{
 				if(ptypes[i].isInterface()){
 					if(!ptypes[i].isInstance(args[i].getValue()) && args[i] instanceof Func){
-						if(ptypes[i].method(null).listSpecific(object, true).count() == 1){
+						if(ptypes[i].method(null).listSpecific(object, true).length() == 1){
 							Class<?> iface = ptypes[i].base;
 							String name = iface.getDeclaredMethods()[0].getName();
 							arr[i] = Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[]{iface}, new SingleInvocationHandler(vm, name, args[i]));

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
+import coa.scripting.EvalSetup;
 import coa.std.NVP;
 
 import ccl.rt.Array;
@@ -95,8 +96,7 @@ public class CclVm implements IVM {
 		});
 		s.load("scope").setValue(new ScopeVal(this, s));
 		try{
-			s.load("eval").setValue((Value) Class.forName("coalang.runtime.scripting.EvalSetup")
-					.getMethod("reflectEvalSupport").invoke(null));
+			s.load("eval").setValue((Value) EvalSetup.reflectEvalSupport(this));
 		}catch(Exception e){}
 	}
 
@@ -156,9 +156,12 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void m(final Runner r, final Factory<InputStream> f) {
+	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, InputStream> f) {
+		final Runner runner = r.create();
+		runner.creation(f.call(null));
+		
 		Func func = new Func(this){
-
+			
 			@Override
 			public Value invoke(Value... args) {
 				ArrayValue arr = new ArrayValue(CclVm.this, new Array(CclVm.this, args));
@@ -170,7 +173,7 @@ public class CclVm implements IVM {
 				setRam(new ArrayList<Value>());
 				Value v;
 				try {
-					v = r.create().execute(f.make(), CclVm.this);
+					v = runner.execute(CclVm.this);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}

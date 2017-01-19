@@ -40,7 +40,7 @@ public class JExpression extends Expression {
 			}
 		}
 		
-		if (methods.count() == 0 && f == null && innerClass == null) {
+		if (methods.length() == 0 && f == null && innerClass == null) {
 			setValue(new Err(vm, new RuntimeException("No such native property '"
 					+ name + "' on Object " + o)));
 			return;
@@ -74,7 +74,7 @@ public class JExpression extends Expression {
 		if(innerClass != null){
 			return innerClass.invoke(args);
 		}
-		if (methods.count() == 0) {
+		if (methods.length() == 0) {
 			return super.invoke(args);
 		} else {
 			return J.invoke(vm, object, Call.pack(methods), args);

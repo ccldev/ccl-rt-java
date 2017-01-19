@@ -7,8 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import ccl.rt.vm.Factory;
-
 public class FileStreamFactory implements Func<Void, InputStream> {
 
 	private File f;

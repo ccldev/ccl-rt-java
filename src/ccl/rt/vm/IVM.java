@@ -1,5 +1,7 @@
 package ccl.rt.vm;
 
+import io.github.coalangsoft.lib.data.Func;
+
 import java.io.InputStream;
 
 import ccl.rt.Value;
@@ -11,7 +13,7 @@ public interface IVM {
 	void s(String string) throws Exception;
 	void f(String floatn) throws Exception;
 	void i(String integer) throws Exception;
-	void m(Runner r, Factory<InputStream> s) throws Exception;
+	void m(Runner r, Func<Void,InputStream> s) throws Exception;
 	void a(int size);
 	
 	void call(int paramCount) throws Exception;

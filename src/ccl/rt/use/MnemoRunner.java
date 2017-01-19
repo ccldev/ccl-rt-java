@@ -2,7 +2,6 @@ package ccl.rt.use;
 
 import io.github.coalangsoft.lib.data.Func;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,21 +12,20 @@ import ccl.rt.Tool;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.store.Variable;
-import ccl.rt.vm.Factory;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
 import ccl.rt.Expression;
 
 public class MnemoRunner implements Runner {
 
-	private Func<String, Factory<InputStream>> streamMaker;
+	private Func<String, Func<Void,InputStream>> streamMaker;
 	
 	private HashMap<String, Integer> marks;
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
 	private Value retVal;
 	
-	public MnemoRunner(Func<String, Factory<InputStream>> function){
+	public MnemoRunner(Func<String, Func<Void, InputStream>> function){
 		this.streamMaker = function;
 		
 		marks = new HashMap<String, Integer>();
@@ -36,15 +34,19 @@ public class MnemoRunner implements Runner {
 	}
 	
 	@Override
-	public Value execute(InputStream cclCode, IVM vm) {
-		retVal = null;
-		
+	public void creation(InputStream cclCode){
 		Scanner s = new Scanner(cclCode);
 		int line = 0;
 		while(s.hasNextLine()){
 			creation(line++, s.nextLine().split(" "));
 		}
 		s.close();
+	}
+	
+	@Override
+	public Value execute(IVM vm) {
+		retVal = null;
+		
 		for(int i = 0; i < instructions.size();){
 			try {
 				i = execution(i, instructions.get(i), arguments.get(i), vm);
