@@ -3,10 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="interfaceWorld"/>
 	<classpathentry kind="src" path="coaReflect"/>
-	<classpathentry kind="src" path="coaLib"/>
 	<classpathentry kind="src" path="jbridge"/>
 	<classpathentry kind="src" path="coa"/>
-	<classpathentry kind="src" path="coaRuntime"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/CoaLib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

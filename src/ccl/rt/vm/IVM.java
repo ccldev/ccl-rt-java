@@ -26,5 +26,6 @@ public interface IVM {
 	void sPut(String funcName);
 	String sPop();
 	int sSize();
+	boolean isDebugState();
 	
 }

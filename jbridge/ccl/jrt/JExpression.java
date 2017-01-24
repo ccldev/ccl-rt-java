@@ -71,13 +71,19 @@ public class JExpression extends Expression {
 	}
 
 	public Value invoke(Value... args) throws Exception {
-		if(innerClass != null){
-			return innerClass.invoke(args);
-		}
-		if (methods.length() == 0) {
-			return super.invoke(args);
-		} else {
-			return J.invoke(vm, object, Call.pack(methods), args);
+		try{
+			Value r;
+			if(innerClass != null){
+				r = innerClass.invoke(args);
+			}else{
+				r = J.invoke(vm, object, Call.pack(methods), args);
+			}
+			if(r instanceof Err){
+				throw new Exception(r + "");
+			}
+			return r;
+		}catch(Exception e){
+			throw new Exception("CCL Runtime Exception: Invoke Expression\n" + this, e);
 		}
 	}
 	
@@ -87,6 +93,13 @@ public class JExpression extends Expression {
 		}else{
 			return super.getProperty(s);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "JExpression [object=" + object + ", methods=" + methods
+				+ ", innerClass=" + innerClass + ", clss=" + clss + ", vm="
+				+ vm + "]";
 	}
 
 }

@@ -20,6 +20,7 @@ import ccl.rt.store.Scope;
 public class CclVm implements IVM {
 
 	private HashMap<Thread,Scope> scopes;
+	private boolean debugState = false;
 	
 	private Scope glob;
 	
@@ -266,6 +267,12 @@ public class CclVm implements IVM {
 	@Override
 	public int sSize() {
 		return stack().size();
+	}
+	public boolean isDebugState() {
+		return debugState;
+	}
+	public void setDebugState(boolean debugState) {
+		this.debugState = debugState;
 	}
 
 }

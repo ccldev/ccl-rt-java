@@ -1,5 +1,6 @@
 package ccl.rt;
 
+import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.reflect.Clss;
 
 import java.util.ArrayList;
@@ -48,6 +49,13 @@ public class Expression implements Value {
 		this.propList = new ArrayList<String>();
 		this.properties = new HashMap<String, Value>();
 		initBaseProperties();
+		
+		if(vm == null){
+			return;
+		}
+		if(vm.isDebugState()){
+			Logger.std.log("Expression instance created (" + getClass() + ") " + this);
+		}
 	}
 
 	private void initBaseProperties() {
@@ -258,7 +266,9 @@ public class Expression implements Value {
 		} else if (args.length == 1) {
 			return getProperty(args[0].getValue() + "");
 		} else {
-			return new Err(vm, "Unsupported param count: " + args.length);
+			return new Err(vm, new Exception(
+				"Unsupported parameter count: " + args.length
+			));
 		}
 	}
 

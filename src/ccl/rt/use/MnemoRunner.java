@@ -1,6 +1,7 @@
 package ccl.rt.use;
 
 import io.github.coalangsoft.lib.data.Func;
+import io.github.coalangsoft.lib.log.Logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,16 +47,28 @@ public class MnemoRunner implements Runner {
 	@Override
 	public Value execute(IVM vm) {
 		retVal = null;
+		if(vm.isDebugState()){
+			Logger.std.log("-Execute Start! Runner snapshot: " + this);
+		}
 		
 		for(int i = 0; i < instructions.size();){
 			try {
 				i = execution(i, instructions.get(i), arguments.get(i), vm);
 				if(i == -1){
+					if(vm.isDebugState()){
+						Logger.std.log(">Execution done! Exit state: return (-1); retVal: " + retVal);
+					}
 					return retVal;
 				}
 			} catch (Exception e) {
+				if(vm.isDebugState()){
+					Logger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
+				}
 				throw new RuntimeException(e);
 			}
+		}
+		if(vm.isDebugState()){
+			Logger.std.log(">Execution done! Exit state: normal");
 		}
 		return new Expression(vm, Special.UNDEFINED);
 	}
@@ -136,6 +149,13 @@ public class MnemoRunner implements Runner {
 	@Override
 	public Runner create() {
 		return new MnemoRunner(streamMaker);
+	}
+
+	@Override
+	public String toString() {
+		return "MnemoRunner [streamMaker=" + streamMaker + ", marks=" + marks
+				+ ", instructions=" + instructions + ", arguments=" + arguments
+				+ ", retVal=" + retVal + "]";
 	}
 
 }

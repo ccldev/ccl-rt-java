@@ -1,5 +1,7 @@
 package ccl.rt.lib;
 
+import java.util.Arrays;
+
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
@@ -125,7 +127,7 @@ public class Std {
 				}
 			}
 		}else{
-			return new Err(vm, new RuntimeException("Unexpected param count: " + args.length));
+			return new Err(vm, new RuntimeException("Unexpected params count: " + args.length));
 		}
 		return new ArrayValue(vm, ret);
 	}
