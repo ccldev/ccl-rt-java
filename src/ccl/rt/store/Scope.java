@@ -66,6 +66,12 @@ public class Scope {
 				return Environment.char_(vm, args[0]);
 			}
 		});
+		variables.put("byte", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Environment.byte_(vm, args[0]);
+			}
+		});
 		variables.put("regex", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {

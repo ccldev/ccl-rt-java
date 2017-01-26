@@ -22,7 +22,7 @@ public class NashornMirrorValue extends Expression {
 			for(int i = 0; i < args.length; i++){
 				params[i] = args[i].getValue();
 			}
-			return new Expression(vm, mirror.call(null, params));
+			return wrap(mirror.call(null, params));
 		}else{
 			return super.invoke(args);
 		}

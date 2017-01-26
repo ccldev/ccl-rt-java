@@ -65,4 +65,8 @@ public class Environment {
 		}else return new Err(vm, value);
 	}
 	
+	public static Value byte_(IVM vm, Value v){
+		return new Expression(vm, ((Number) v.getValue()).byteValue());
+	}
+	
 }

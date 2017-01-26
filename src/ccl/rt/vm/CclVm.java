@@ -1,5 +1,7 @@
 package ccl.rt.vm;
 
+import io.github.coalangsoft.lib.log.Logger;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
 import ccl.rt.Func;
+import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Spec;

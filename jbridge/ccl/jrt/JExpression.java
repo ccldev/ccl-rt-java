@@ -8,12 +8,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.vm.IVM;
+import ccl.rt.vm.StackTraceFormer;
 
 public class JExpression extends Expression {
 
@@ -79,7 +81,15 @@ public class JExpression extends Expression {
 				r = J.invoke(vm, object, Call.pack(methods), args);
 			}
 			if(r instanceof Err){
-				throw new Exception(r + "");
+				Object o = ((Err) r).getValue();
+				if(o instanceof Throwable){
+					((Throwable) o).printStackTrace(System.out);
+				}else if(o instanceof List){
+					List<Throwable> t = (List<Throwable>) o;
+					for(int i = 0; i < t.size(); i++){
+						t.get(i).printStackTrace(System.out);
+					}
+				}
 			}
 			return r;
 		}catch(Exception e){
