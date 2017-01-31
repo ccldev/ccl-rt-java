@@ -6,6 +6,7 @@ import java.lang.reflect.Proxy;
 
 import ccl.rt.Array;
 import ccl.rt.Func;
+import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.Expression;
 import ccl.rt.vm.IVM;
@@ -32,6 +33,8 @@ public class JMethod {
 				arr[i] = JArray.cast(ptypes[i].base, (Array) args[i].getValue());
 			}else if(ptypes[i].base == Boolean.class && args[i].getValue() instanceof Number){
 				arr[i] = ((Number)args[i].getValue()).intValue() == 1;
+			}else if(args[i].getValue() == Special.UNDEFINED){
+				arr[i] = null;
 			}else{
 				if(ptypes[i].isInterface()){
 					if(!ptypes[i].isInstance(args[i].getValue()) && args[i] instanceof Func){
