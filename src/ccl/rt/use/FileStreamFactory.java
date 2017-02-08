@@ -24,4 +24,9 @@ public class FileStreamFactory implements Func<Void, InputStream> {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "FileStreamFactory [f=" + f + "]";
+	}
+
 }
