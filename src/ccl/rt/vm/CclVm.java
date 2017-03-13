@@ -73,9 +73,6 @@ public class CclVm implements IVM {
 	public CclVm(){
 		glob = new Scope(this);
 		
-		initStd(glob);
-		initSpec(glob);
-		
 		rams = new HashMap<Thread,ArrayList<Value>>();
 		stacks = new HashMap<Thread,Stack<String>>();
 		
@@ -85,28 +82,6 @@ public class CclVm implements IVM {
 	
 	public void setVariable(String name, Object value){
 		scope().load(name).setValue(new Expression(this, value));
-	}
-	
-	private void initSpec(Scope s) {
-		s.load("java").setValue(new Func(this){
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return Spec.java(CclVm.this, args[0].getValue() + "");
-				} catch (ClassNotFoundException e) {
-					return new Err(CclVm.this, e);
-				}
-			}
-		});
-		s.load("scope").setValue(new ScopeVal(this, s));
-		try{
-			s.load("eval").setValue((Value) EvalSetup.reflectEvalSupport(this));
-		}catch(Exception e){}
-	}
-
-	private void initStd(Scope s) {
-		s.load("false").setValue(new Expression(this, false));
-		s.load("true").setValue(new Expression(this, true));
 	}
 
 	@Override

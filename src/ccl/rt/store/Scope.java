@@ -2,13 +2,18 @@ package ccl.rt.store;
 
 import java.util.HashMap;
 
+import coa.scripting.EvalSetup;
+
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Special;
 import ccl.rt.Value;
+import ccl.rt.err.Err;
 import ccl.rt.lib.Environment;
+import ccl.rt.lib.Spec;
 import ccl.rt.thread.ThreadDataExpression;
 import ccl.rt.vm.IVM;
+import ccl.rt.vm.ScopeVal;
 
 public class Scope {
 	
@@ -21,9 +26,12 @@ public class Scope {
 		variables = new HashMap<String, Value>();
 		variables.put("thread",new ThreadDataExpression(vm, Thread.currentThread()));
 		this.vm = vm;
-		initGlobals();
+		initCasters();
+		initStd();
+		initSpec();
 	}
-	private void initGlobals() {
+	
+	private void initCasters() {
 		variables.put("boolean", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
@@ -79,6 +87,27 @@ public class Scope {
 			}
 		});
 	}
+	private void initSpec() {
+		load("java").setValue(new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					return Spec.java(vm, args[0].getValue() + "");
+				} catch (ClassNotFoundException e) {
+					return new Err(vm, e);
+				}
+			}
+		});
+		load("scope").setValue(new ScopeVal(vm, this));
+		try{
+			load("eval").setValue((Value) EvalSetup.reflectEvalSupport(vm));
+		}catch(Exception e){}
+	}
+	private void initStd() {
+		load("false").setValue(new Expression(vm, false));
+		load("true").setValue(new Expression(vm, true));
+	}
+	
 	private Scope(IVM vm, Scope parent){
 		this.vm = vm;
 		variables = new HashMap<String, Value>();
