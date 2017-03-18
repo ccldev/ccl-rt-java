@@ -7,6 +7,7 @@ import coa.scripting.EvalSetup;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Special;
+import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Environment;
@@ -84,6 +85,12 @@ public class Scope {
 			@Override
 			public Value invoke(Value... args) {
 				return Environment.regex(vm, args[0]);
+			}
+		});
+		variables.put("unbound", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return new Unbound(args[0]);
 			}
 		});
 	}

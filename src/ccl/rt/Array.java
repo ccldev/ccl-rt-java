@@ -80,6 +80,18 @@ public class Array {
 		return base.remove(index);
 	}
 	
+	public Value select(Value condition) throws Exception{
+		Array a = new Array(vm,new Value[0]);
+		
+		for(int i = 0; i < length(); i++){
+			if(((Number)condition.invoke(getExpression(i)).getValue()).intValue() == 1){
+				a.pushValue(getExpression(i));
+			}
+		}
+		
+		return new ArrayValue(vm,a);
+	}
+	
 	public String toString(){
 		Object[] arr = new Object[base.size()];
 		for(int i = 0; i < arr.length; i++){

@@ -148,5 +148,19 @@ public class Std {
 		int b = ((Number) expression.getValue()).intValue();
 		return new Expression(vm, b != 1);
 	}
+
+	public static Value mod(IVM vm, Value a, Value b) {
+		try{
+			double a1 = ((Number) a.getValue()).doubleValue();
+			double b1 = ((Number) b.getValue()).doubleValue();
+			return new Expression(vm, a1 % b1);
+		}catch(ClassCastException e){
+			try {
+				return b.getProperty("div").invoke(a);
+			} catch (Exception e1) {
+				return new Err(vm, e1);
+			}
+		}
+	}
 	
 }

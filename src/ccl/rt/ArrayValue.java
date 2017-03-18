@@ -63,6 +63,18 @@ public class ArrayValue extends Expression {
 			}
 			
 		});
+		setProperty("select", new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					return ((Array) ArrayValue.this.getValue()).select(args[0]);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+		});
 	}
 	
 	public ArrayValue(IVM vm, int size) {

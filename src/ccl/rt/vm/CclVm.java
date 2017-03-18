@@ -4,6 +4,7 @@ import io.github.coalangsoft.lib.log.Logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -15,6 +16,7 @@ import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Special;
+import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Spec;
@@ -182,6 +184,8 @@ public class CclVm implements IVM {
 			Value v = args[i];
 			if(v.getValue() instanceof NVP){
 				settings.add(v);
+			}else if(v instanceof Unbound){
+				params.add(((Unbound) v).formFunction(this));
 			}else{
 				params.add(v);
 			}

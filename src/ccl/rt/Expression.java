@@ -126,6 +126,13 @@ public class Expression implements Value {
 						return Std.div(vm, Expression.this, args[0]);
 					}
 				};
+			case "mod":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return Std.mod(vm, Expression.this, args[0]);
+					}
+				};
 			}
 		}
 		
