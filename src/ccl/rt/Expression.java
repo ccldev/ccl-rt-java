@@ -133,6 +133,18 @@ public class Expression implements Value {
 						return Std.mod(vm, Expression.this, args[0]);
 					}
 				};
+			case "equals":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						try{
+							boolean res = ((Number) Expression.this.getValue()).doubleValue() == ((Number) args[0].getValue()).doubleValue();
+							return new Expression(vm,res);
+						}catch(Exception e){
+							return new Expression(vm,false);
+						}
+					}
+				};
 			}
 		}
 		
