@@ -76,6 +76,11 @@ public class Expression implements Value {
 		}
 		
 		if (computeType().equals("number")){
+			try{
+				double d = Double.parseDouble("0." + name);
+				double i = ((Number) Expression.this.getValue()).intValue();
+				return new Expression(vm,d+i);
+			}catch(NumberFormatException e){}
 			switch (name) {
 			case "not":
 				return new Func(vm) {
