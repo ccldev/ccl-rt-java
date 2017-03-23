@@ -1,5 +1,7 @@
 package ccl.rt.store;
 
+import io.github.coalangsoft.ifw.use.CustomClassFinder;
+
 import java.util.HashMap;
 
 import coa.scripting.EvalSetup;
@@ -23,13 +25,13 @@ public class Scope {
 	private IVM vm;
 	
 	
-	public Scope(IVM vm){
+	public Scope(IVM vm, CustomClassFinder f){
 		variables = new HashMap<String, Value>();
 		variables.put("thread",new ThreadDataExpression(vm, Thread.currentThread()));
 		this.vm = vm;
 		initCasters();
 		initStd();
-		initSpec();
+		initSpec(f);
 	}
 	
 	private void initCasters() {
@@ -94,12 +96,12 @@ public class Scope {
 			}
 		});
 	}
-	private void initSpec() {
+	private void initSpec(final CustomClassFinder f) {
 		load("java").setValue(new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
 				try {
-					return Spec.java(vm, args[0].getValue() + "");
+					return Spec.java(vm, f, args[0].getValue() + "");
 				} catch (ClassNotFoundException e) {
 					return new Err(vm, e);
 				}

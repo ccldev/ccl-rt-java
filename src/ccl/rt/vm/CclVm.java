@@ -1,5 +1,6 @@
 package ccl.rt.vm;
 
+import io.github.coalangsoft.ifw.use.CustomClassFinder;
 import io.github.coalangsoft.lib.log.Logger;
 
 import java.io.InputStream;
@@ -72,8 +73,8 @@ public class CclVm implements IVM {
 		scopes.put(Thread.currentThread(), s);
 	}
 	
-	public CclVm(){
-		glob = new Scope(this);
+	public CclVm(CustomClassFinder f){
+		glob = new Scope(this, f);
 		
 		rams = new HashMap<Thread,ArrayList<Value>>();
 		stacks = new HashMap<Thread,Stack<String>>();
