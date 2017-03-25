@@ -1,7 +1,7 @@
 package ccl.rt.vm;
 
-import io.github.coalangsoft.ifw.use.CustomClassFinder;
 import io.github.coalangsoft.lib.log.Logger;
+import io.github.coalangsoft.lib.reflect.CustomClassFinder;
 
 import java.io.InputStream;
 import java.util.ArrayList;

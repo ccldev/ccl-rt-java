@@ -1,6 +1,6 @@
 package ccl.rt.store;
 
-import io.github.coalangsoft.ifw.use.CustomClassFinder;
+import io.github.coalangsoft.lib.reflect.CustomClassFinder;
 
 import java.util.HashMap;
 
