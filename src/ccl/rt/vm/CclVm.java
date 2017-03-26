@@ -1,34 +1,26 @@
 package ccl.rt.vm;
 
-import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.lib.reflect.CustomClassFinder;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Stack;
 
-import coa.scripting.EvalSetup;
 import coa.std.NVP;
 
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
 import ccl.rt.Func;
-import ccl.rt.Special;
 import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
-import ccl.rt.lib.Spec;
 import ccl.rt.store.Scope;
 
 public class CclVm implements IVM {
-
-	private HashMap<Thread,Scope> scopes;
-	private boolean debugState = false;
 	
-	private Scope glob;
+	private boolean debugState = false;
 	
 	private HashMap<Thread,ArrayList<Value>> rams;
 	private HashMap<Thread,Stack<String>> stacks;
@@ -58,43 +50,20 @@ public class CclVm implements IVM {
 	private void setRam(ArrayList<Value> ram){
 		rams.put(Thread.currentThread(), ram);
 	}
-	private Scope scope(){
-		Thread t = Thread.currentThread();
-		Scope ret = scopes.get(t);
-		if(ret != null){
-			return ret;
-		}else{
-			Scope n = glob.chain();
-			scopes.put(t,n);
-			return n;
-		}
-	}
-	private void setScope(Scope s){
-		scopes.put(Thread.currentThread(), s);
-	}
 	
-	public CclVm(CustomClassFinder f){
-		glob = new Scope(this, f);
-		
+	public CclVm(){
 		rams = new HashMap<Thread,ArrayList<Value>>();
 		stacks = new HashMap<Thread,Stack<String>>();
-		
-		scopes = new HashMap<Thread,Scope>();
-		scopes.put(Thread.currentThread(), glob);
-	}
-	
-	public void setVariable(String name, Object value){
-		scope().load(name).setValue(new Expression(this, value));
 	}
 
 	@Override
-	public void cScope() {
-		setScope(scope().parent());
+	public Scope cScope(Scope sc) {
+		return sc.parent();
 	}
 
 	@Override
-	public void oScope() {
-		setScope(scope().chain());
+	public Scope oScope(Scope sc) {
+		return sc.chain();
 	}
 
 	@Override
@@ -138,7 +107,7 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, InputStream> f) {
+	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, InputStream> f, final Scope sc) {
 		final Runner runner = r.create();
 		runner.creation(f.call(null));
 		
@@ -148,19 +117,18 @@ public class CclVm implements IVM {
 			public Value invoke(Value... args) {
 				ArrayValue arr = new ArrayValue(CclVm.this, new Array(CclVm.this, args));
 				
-				setScope(scope().chain());
-				scope().reserve("parameters");
-				scope().load("parameters").setValue(arr);
+				Scope myScope = sc.chain();
+				myScope.reserve("parameters");
+				myScope.load("parameters").setValue(arr);
 				ArrayList<Value> oldRam = ram();
 				setRam(new ArrayList<Value>());
 				Value v;
 				try {
-					v = runner.execute(CclVm.this);
+					v = runner.execute(CclVm.this, myScope);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
 				setRam(oldRam);
-				setScope(scope().parent());
 				return v;
 			}
 			
@@ -221,8 +189,8 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void load(String var) {
-		ram().add(scope().load(var));
+	public void load(String var, Scope sc) {
+		ram().add(sc.load(var));
 	}
 
 	@Override
@@ -236,8 +204,8 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void reserve(String var) {
-		put(scope().reserve(var));
+	public void reserve(String var, Scope sc) {
+		put(sc.reserve(var));
 	}
 	@Override
 	public void sPut(String funcName) {

@@ -244,6 +244,13 @@ public class Expression implements Value {
 				}
 				
 			};
+		case "equals":
+			return new Func(vm) {
+				@Override
+				public Value invoke(Value... args) {
+					return new Expression(vm, args[0].getValue().equals(Expression.this.getValue()));
+				}
+			};
 		}
 
 		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),

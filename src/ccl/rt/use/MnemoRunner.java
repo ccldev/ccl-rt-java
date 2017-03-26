@@ -12,6 +12,7 @@ import ccl.rt.Special;
 import ccl.rt.Tool;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
+import ccl.rt.store.Scope;
 import ccl.rt.store.Variable;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
@@ -19,6 +20,8 @@ import ccl.rt.Expression;
 
 public class MnemoRunner implements Runner {
 
+	private Scope sc;
+	
 	private Func<String, Func<Void,InputStream>> streamMaker;
 	
 	private HashMap<String, Integer> marks;
@@ -45,7 +48,8 @@ public class MnemoRunner implements Runner {
 	}
 	
 	@Override
-	public Value execute(IVM vm) {
+	public Value execute(IVM vm, Scope sc) {
+		this.sc = sc;
 		retVal = null;
 		if(vm.isDebugState()){
 			Logger.std.log("-Execute Start! Runner snapshot: " + this);
@@ -77,7 +81,7 @@ public class MnemoRunner implements Runner {
 		case "mark": break;
 		case "if": return ((Number) vm.pop().getValue()).intValue() == 1 ? marks.get(args) : line+1;
 		case "goto": return marks.get(args);
-		case "load": vm.load(args); break;
+		case "load": vm.load(args, sc); break;
 		case "putI": vm.i(args); break;
 		case "invoke": invoke(args, vm); break;
 		case "store":
@@ -89,11 +93,11 @@ public class MnemoRunner implements Runner {
 			Value value = vm.pop();
 			var.setValue(value);
 			break;
-		case "newscope": vm.oScope(); break;
-		case "oldscope": vm.cScope(); break;
+		case "newscope": sc = vm.oScope(sc); break;
+		case "oldscope": sc = vm.cScope(sc); break;
 		case "putS": vm.s(args); break;
 		case "putA": vm.a(Integer.parseInt(args)); break;
-		case "putM": vm.m(this.create(), streamMaker.call(args)); break;
+		case "putM": vm.m(this.create(), streamMaker.call(args), sc); break;
 		case "get": vm.put(vm.pop().getProperty(args)); break;
 		case "duplicate": vm.dup(); break;
 		case "pop":
@@ -108,10 +112,10 @@ public class MnemoRunner implements Runner {
 			retVal = vm.pop();
 			return -1;
 		case "reserve":
-			vm.reserve(args);
+			vm.reserve(args, sc);
 			break;
 		case "rap":
-			vm.reserve(args);
+			vm.reserve(args, sc);
 			vm.pop();
 			break;
 		case "sPut":
