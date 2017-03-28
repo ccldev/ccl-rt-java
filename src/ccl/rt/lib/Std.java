@@ -96,6 +96,20 @@ public class Std {
 			}
 		}
 	}
+	
+	public static Value pow(IVM vm, Value a, Value b){
+		try{
+			double a1 = ((Number) a.getValue()).doubleValue();
+			double b1 = ((Number) b.getValue()).doubleValue();
+			return new Expression(vm, Math.pow(a1,b1));
+		}catch(ClassCastException e){
+			try {
+				return b.getProperty("pow").invoke(a);
+			} catch (Exception e1) {
+				return new Err(vm, e1);
+			}
+		}
+	}
 
 	public static Value bind(IVM vm, Value func, Value[] args) {
 		return new BindFunc(vm, func, args);

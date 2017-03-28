@@ -131,6 +131,13 @@ public class Expression implements Value {
 						return Std.div(vm, Expression.this, args[0]);
 					}
 				};
+			case "pow":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return Std.pow(vm, Expression.this, args[0]);
+					}
+				};
 			case "mod":
 				return new Func(vm) {
 					@Override
@@ -249,6 +256,27 @@ public class Expression implements Value {
 				@Override
 				public Value invoke(Value... args) {
 					return new Expression(vm, args[0].getValue().equals(Expression.this.getValue()));
+				}
+			};
+		case "array":
+			return new Func(vm) {
+				@Override
+				public Value invoke(Value... args) {
+					return new ArrayValue(vm, new Array(vm, 
+						new io.github.coalangsoft.lib.data.Func<Integer,Value>(){
+
+							@Override
+							public Value call(Integer p) {
+								// TODO Auto-generated method stub
+								try {
+									return Expression.this.invoke(new Expression(vm,p));
+								} catch (Exception e) {
+									throw new RuntimeException(e);
+								}
+							}
+						
+						}
+					));
 				}
 			};
 		}

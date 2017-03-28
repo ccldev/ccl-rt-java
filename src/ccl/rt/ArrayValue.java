@@ -75,6 +75,42 @@ public class ArrayValue extends Expression {
 			}
 			
 		});
+		setProperty("repeat", new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					return ((Array) ArrayValue.this.getValue()).repeat();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+		});
+		setProperty("sort", new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					return ((Array) ArrayValue.this.getValue()).sort();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+		});
+		setProperty("zip", new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					return ((Array) ArrayValue.this.getValue()).zip(args[0]);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+		});
 	}
 	
 	public ArrayValue(IVM vm, int size) {

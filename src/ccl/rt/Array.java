@@ -2,6 +2,7 @@ package ccl.rt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import ccl.rt.err.Err;
 import ccl.rt.vm.IVM;
@@ -9,27 +10,34 @@ import ccl.rt.vm.IVM;
 public class Array {
 	
 	private ArrayList<Value> base;
+	private io.github.coalangsoft.lib.data.Func<Integer,Value> factory;
 	private IVM vm;
-	
-	{
-		base = new ArrayList<Value>();
-	}
 	
 	public Array(IVM vm, int size){
 		this.vm = vm;
+		base = new ArrayList<Value>();
 		for(int i = 0; i < size; i++){
 			base.add(new Expression(vm, Special.UNDEFINED));
 		}
 	}
 	
+	public Array(IVM vm, io.github.coalangsoft.lib.data.Func<Integer,Value> factory){
+		this.vm = vm;
+		this.factory = factory;
+	}
+	
 	public Array(IVM vm, Value[] args) {
 		this.vm = vm;
+		base = new ArrayList<Value>();
 		for(int i = 0; i < args.length; i++){
 			base.add(args[i]);
 		}
 	}
 
 	public Value getExpression(int index){
+		if(base == null){
+			return factory.call(index);
+		}
 		try{
 			return base.get(index);
 		}catch(IndexOutOfBoundsException e){
@@ -42,10 +50,17 @@ public class Array {
 	}
 	
 	public int length(){
-		return base.size();
+		if(base != null){
+			return base.size();
+		}else{
+			return Integer.MAX_VALUE;
+		}
 	}
 	
 	public void pushValue(Value v){
+		if(base == null){
+			throw new UnsupportedOperationException("Can not add Value to dynamic array!");
+		}
 		base.add(v);
 	}
 	
@@ -58,13 +73,13 @@ public class Array {
 	}
 	
 	public Value operate(String op){
-		if(base.size() == 0){
+		if(length() == 0){
 			return new Expression(vm, Special.UNDEFINED);
 		}
-		Value v = base.get(0);
-		for(int i = 1; i < base.size(); i++){
+		Value v = getExpression(0);
+		for(int i = 1; i < length(); i++){
 			try {
-				v = v.getProperty(op).invoke(base.get(i));
+				v = v.getProperty(op).invoke(getExpression(i));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -73,10 +88,16 @@ public class Array {
 	}
 	
 	public Value setValue(int index, Value v){
+		if(base == null){
+			throw new UnsupportedOperationException("Can not set Value on dynamic array!");
+		}
 		return base.set(index,v);
 	}
 	
 	public Value remove(int index){
+		if(base == null){
+			throw new UnsupportedOperationException("Can not remove Value on dynamic array!");
+		}
 		return base.remove(index);
 	}
 	
@@ -90,6 +111,59 @@ public class Array {
 		}
 		
 		return new ArrayValue(vm,a);
+	}
+	
+	public Value repeat(){
+		
+		if(base == null){
+			return new ArrayValue(vm, this);
+		}
+		
+		final int origLength = length();
+		final Value[] origArray = base.toArray(new Value[0]);
+		
+		return new ArrayValue(vm, new Array(vm, 
+			new io.github.coalangsoft.lib.data.Func<Integer,Value>(){
+
+				@Override
+				public Value call(Integer p) {
+					return origArray[p % origLength];
+				}
+			
+			}
+		));
+	}
+	
+	public Value sort(){
+		if(base == null){
+			throw new UnsupportedOperationException("Unable to sort dynamic array!");
+		}
+		
+		int length = length();
+		ArrayList<ArrayComparable> cs = new ArrayList<ArrayComparable>();
+		for(int i = 0; i < length; i++){
+			cs.add(new ArrayComparable(base,i));
+		}
+		Collections.sort(cs);
+		
+		Array a = new Array(vm,0);
+		for(int i = 0; i < length; i++){
+			a.pushValue(base.get(cs.get(i).index));
+		}
+		return new ArrayValue(vm, a);
+	}
+	
+	public Value zip(Value condition) throws Exception{
+		Array a = (Array) get(0);
+		Array b = (Array) get(1);
+		Array c = new Array(vm,0);
+		for(int i = 0; i < a.length(); i++){
+			c.pushValue(condition.invoke(
+				a.getExpression(i),
+				b.getExpression(i)
+			));
+		}
+		return new ArrayValue(vm,c);
 	}
 	
 	public String toString(){
