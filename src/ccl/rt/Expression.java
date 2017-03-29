@@ -66,6 +66,7 @@ public class Expression implements Value {
 		propList.add("properties");
 		propList.add("property");
 		propList.add("extend");
+		propList.add("push");
 	}
 
 	public Value getProperty(String name) {
@@ -258,6 +259,24 @@ public class Expression implements Value {
 					return new Expression(vm, args[0].getValue().equals(Expression.this.getValue()));
 				}
 			};
+		case "push":
+			if(computeType().equals("array")){
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						Array a = (Array) Expression.this.getValue();
+						a.pushValue(args[0]);
+						return new ArrayValue(vm,a);
+					}
+				};
+			}else{
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return new ArrayValue(vm, new Array(vm, new Value[]{Expression.this,args[0]}));
+					}
+				};
+			}
 		case "array":
 			return new Func(vm) {
 				@Override
