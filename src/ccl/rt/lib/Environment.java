@@ -51,7 +51,10 @@ public class Environment {
 	private static Array array0(IVM vm, Object val){
 		if(val instanceof Array) return (Array) val;
 		if(val instanceof Number) return new Array(vm, ((Number) val).intValue());
-		return Array.clone(vm, val);
+		if(val.getClass().isArray()){
+			return Array.clone(vm, val);
+		}
+		return new Array(vm,new Value[]{new Expression(vm,val)});
 	}
 	public static Value char_(IVM vm, Value v){
 		return new Expression(vm, char0(vm, v.getValue()));

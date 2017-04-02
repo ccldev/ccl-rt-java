@@ -223,6 +223,19 @@ public class Expression implements Value {
 			return new Expression(vm, computeType());
 		case "properties":
 			return new ArrayValue(vm, Array.clone(vm, propList.toArray(new String[0])));
+		case "invoke":
+			return new Func(vm){
+
+				@Override
+				public Value invoke(Value... args) {
+					try {
+						return Expression.this.invoke(((Array) args[0].getValue()).base.toArray(new Value[0]));
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}
+				
+			};
 		case "extend":
 			return new Func(vm){
 

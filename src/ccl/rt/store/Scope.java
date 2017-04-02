@@ -14,6 +14,7 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Environment;
 import ccl.rt.lib.Spec;
+import ccl.rt.lib.Std;
 import ccl.rt.thread.ThreadDataExpression;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.ScopeVal;
@@ -115,6 +116,46 @@ public class Scope {
 	private void initStd() {
 		load("false").setValue(new Expression(vm, false));
 		load("true").setValue(new Expression(vm, true));
+		load("while").setValue(new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				final Value cnd = args[0];
+				return new Func(vm){
+
+					@Override
+					public Value invoke(Value... args) {
+						try {
+							return Std.whileGlobal(vm,args[0],cnd);
+						} catch (Exception e) {
+							return new Err(vm,e);
+						}
+					}
+					
+				};
+			}
+			
+		});
+		load("for").setValue(new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				final Value[] cnd = args;
+				return new Func(vm){
+
+					@Override
+					public Value invoke(Value... args) {
+						try {
+							return Std.forGlobal(vm,args[0], cnd);
+						} catch (Exception e) {
+							return new Err(vm,e);
+						}
+					}
+					
+				};
+			}
+			
+		});
 	}
 	
 	private Scope(IVM vm, Scope parent){

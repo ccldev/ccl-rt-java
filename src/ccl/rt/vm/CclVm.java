@@ -120,6 +120,8 @@ public class CclVm implements IVM {
 				Scope myScope = sc.chain();
 				myScope.reserve("parameters");
 				myScope.load("parameters").setValue(arr);
+				myScope.reserve("@");
+				myScope.load("@").setValue(myScope.load("parameters"));
 				ArrayList<Value> oldRam = ram();
 				setRam(new ArrayList<Value>());
 				Value v;

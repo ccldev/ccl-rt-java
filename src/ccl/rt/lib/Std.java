@@ -1,10 +1,9 @@
 package ccl.rt.lib;
 
-import java.util.Arrays;
-
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
+import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
@@ -119,6 +118,28 @@ public class Std {
 		return new UnbindFunc(vm, func, ((Number) arg.getValue()).intValue());
 	}
 	
+	public static Value forGlobal(IVM vm, Value func, Value[] args){
+		if(args.length == 1){
+			Array a = (Array) args[0].getValue();
+			for(int i = 0; i < a.length(); i++){
+				try {
+					func.invoke(a.getExpression(i));
+				} catch (Exception e) {}
+			}
+		}else if(args.length == 2){
+			long a = ((Number) args[0].getValue()).longValue();
+			long b = ((Number) args[1].getValue()).longValue();
+			for(long i = a; i <= b; i++){
+				try {
+					func.invoke(new Expression(vm, i));
+				} catch (Exception e) {}
+			}
+		}else{
+			return new Err(vm, new RuntimeException("Unexpected params count: " + args.length));
+		}
+		return new Expression(vm, Special.UNDEFINED);
+	}
+	
 	public static Value for_(IVM vm, Value func, Value[] args){
 		Array ret = new Array(vm, 0);
 		if(args.length == 1){
@@ -156,6 +177,15 @@ public class Std {
 			return new Err(vm, e);
 		}
 		return new ArrayValue(vm, a);
+	}
+	
+	public static Value whileGlobal(IVM vm, Value func, Value condition) throws Exception {
+		while(((Number) condition.invoke().getValue()).intValue() == 1){
+			try {
+				func.invoke();
+			} catch (Exception e) {}
+		}
+		return new Expression(vm, Special.UNDEFINED);
 	}
 
 	public static Value not(IVM vm, Expression expression) {

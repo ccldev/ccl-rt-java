@@ -9,7 +9,7 @@ import ccl.rt.vm.IVM;
 
 public class Array {
 	
-	private ArrayList<Value> base;
+	ArrayList<Value> base;
 	private io.github.coalangsoft.lib.data.Func<Integer,Value> factory;
 	private IVM vm;
 	
