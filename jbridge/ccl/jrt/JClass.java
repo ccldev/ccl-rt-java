@@ -5,7 +5,6 @@ import io.github.coalangsoft.reflect.Clss;
 import java.lang.reflect.Proxy;
 
 import ccl.rt.Expression;
-import ccl.rt.Func;
 import ccl.rt.Value;
 import ccl.rt.vm.IVM;
 
@@ -34,13 +33,13 @@ public class JClass extends Expression {
 
 	public Value invoke(Value... args) {
 		if (clss.base.isInterface()) {
-			return J.invoke(vm, null, Call.pack(Proxy.getProxyClass(
+			return J.invoke(vm, null, new Clss(Proxy.getProxyClass(
 					ClassLoader.getSystemClassLoader(), new Class[] { clss.base })
-					.getConstructors()), new Value[] { new Expression(vm, 
+					), new Value[] { new Expression(vm, 
 					new JInvocationHandler(vm, args[0])) });
 		}
 		
-		return J.invoke(vm, null, Call.pack(clss.base.getConstructors()), args);
+		return J.invoke(vm, null, clss, args);
 	}
 
 }

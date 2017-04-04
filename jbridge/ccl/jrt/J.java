@@ -1,9 +1,9 @@
 package ccl.jrt;
 
-import java.util.ArrayList;
+import io.github.coalangsoft.reflect.MultipleCallable;
+import io.github.coalangsoft.reflect.SingleCallable;
 
-import coa.std.NVP;
-import coa.std.NVPValue;
+import java.util.ArrayList;
 
 import ccl.rt.Expression;
 import ccl.rt.Value;
@@ -13,10 +13,10 @@ import ccl.jrt.JMethod;
 
 public class J {
 
-	public static Value invoke(IVM vm, Object o, ICallable[] methods, Value[] args) {
+	public static Value invoke(IVM vm, Object o, MultipleCallable<?> methods, Value[] args) {
 		ArrayList<Exception> errs = new ArrayList<Exception>();
-		for(int i = 0; i < methods.length; i++){
-			ICallable m = methods[i];
+		for(int i = 0; i < methods.length(); i++){
+			SingleCallable m = methods.at(i);
 			if(m.getParameterCount() != args.length){
 				continue;
 			}

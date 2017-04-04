@@ -15,7 +15,7 @@ public interface IVM {
 	void f(String floatn) throws Exception;
 	void i(String integer) throws Exception;
 	void m(Runner r, Func<Void,InputStream> s, Scope sc) throws Exception;
-	void a(int size);
+	void a();
 	
 	void call(int paramCount) throws Exception;
 	void dup() throws Exception;

@@ -123,7 +123,10 @@ public class Std {
 			Array a = (Array) args[0].getValue();
 			for(int i = 0; i < a.length(); i++){
 				try {
-					func.invoke(a.getExpression(i));
+					Value o = func.invoke(a.getExpression(i));
+					if(o.getValue() != Special.UNDEFINED){
+						return o;
+					}
 				} catch (Exception e) {}
 			}
 		}else if(args.length == 2){
@@ -131,7 +134,10 @@ public class Std {
 			long b = ((Number) args[1].getValue()).longValue();
 			for(long i = a; i <= b; i++){
 				try {
-					func.invoke(new Expression(vm, i));
+					Value o = func.invoke(new Expression(vm, i));
+					if(o.getValue() != Special.UNDEFINED){
+						return o;
+					}
 				} catch (Exception e) {}
 			}
 		}else{
@@ -182,7 +188,29 @@ public class Std {
 	public static Value whileGlobal(IVM vm, Value func, Value condition) throws Exception {
 		while(((Number) condition.invoke().getValue()).intValue() == 1){
 			try {
-				func.invoke();
+				Value o = func.invoke();
+				if(o.getValue() != Special.UNDEFINED){
+					return o;
+				}
+			} catch (Exception e) {}
+		}
+		return new Expression(vm, Special.UNDEFINED);
+	}
+	
+	public static Value ifGlobal(IVM vm, Value func, Value els, Value condition) throws Exception {
+		if(((Number) condition.invoke().getValue()).intValue() == 1){
+			try {
+				Value o = func.invoke();
+				if(o.getValue() != Special.UNDEFINED){
+					return o;
+				}
+			} catch (Exception e) {}
+		}else{
+			try {
+				Value o = els.invoke();
+				if(o.getValue() != Special.UNDEFINED){
+					return o;
+				}
 			} catch (Exception e) {}
 		}
 		return new Expression(vm, Special.UNDEFINED);

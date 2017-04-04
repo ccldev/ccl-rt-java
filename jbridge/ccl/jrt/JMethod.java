@@ -1,6 +1,7 @@
 package ccl.jrt;
 
 import io.github.coalangsoft.reflect.Clss;
+import io.github.coalangsoft.reflect.SingleCallable;
 
 import java.lang.reflect.Proxy;
 
@@ -13,11 +14,11 @@ import ccl.rt.vm.IVM;
 
 public class JMethod {
 
-	private ICallable method;
+	private SingleCallable method;
 	private Object object;
 	private IVM vm;
 
-	public JMethod(IVM vm, Object o, ICallable m) {
+	public JMethod(IVM vm, Object o, SingleCallable m) {
 		this.vm = vm;
 		this.method = m;
 		this.object = o;
@@ -49,7 +50,7 @@ public class JMethod {
 				arr[i] = ptypes[i].base.cast(args[i].getValue());
 			}
 		}
-		return new Expression(vm, method.invoke(object, (Object[]) arr));
+		return new Expression(vm, method.call(arr));
 		
 	}
 

@@ -116,6 +116,7 @@ public class Scope {
 	private void initStd() {
 		load("false").setValue(new Expression(vm, false));
 		load("true").setValue(new Expression(vm, true));
+		load("null").setValue(new Expression(vm, Special.NULL));
 		load("while").setValue(new Func(vm){
 
 			@Override
@@ -127,6 +128,26 @@ public class Scope {
 					public Value invoke(Value... args) {
 						try {
 							return Std.whileGlobal(vm,args[0],cnd);
+						} catch (Exception e) {
+							return new Err(vm,e);
+						}
+					}
+					
+				};
+			}
+			
+		});
+		load("if").setValue(new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				final Value cnd = args[0];
+				return new Func(vm){
+
+					@Override
+					public Value invoke(Value... args) {
+						try {
+							return Std.ifGlobal(vm,args[0],args[1],cnd);
 						} catch (Exception e) {
 							return new Err(vm,e);
 						}

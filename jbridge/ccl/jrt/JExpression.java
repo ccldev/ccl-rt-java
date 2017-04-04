@@ -1,13 +1,9 @@
 package ccl.jrt;
 
 import io.github.coalangsoft.reflect.Clss;
-import io.github.coalangsoft.reflect.Methods;
 import io.github.coalangsoft.reflect.SpecificMethods;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ccl.rt.Expression;
@@ -15,7 +11,6 @@ import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.vm.IVM;
-import ccl.rt.vm.StackTraceFormer;
 
 public class JExpression extends Expression {
 
@@ -78,7 +73,7 @@ public class JExpression extends Expression {
 			if(innerClass != null){
 				r = innerClass.invoke(args);
 			}else{
-				r = J.invoke(vm, object, Call.pack(methods), args);
+				r = J.invoke(vm, object, methods, args);
 			}
 			if(r instanceof Err){
 				Object o = ((Err) r).getValue();

@@ -1,7 +1,5 @@
 package ccl.rt.vm;
 
-import io.github.coalangsoft.lib.reflect.CustomClassFinder;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,10 +116,8 @@ public class CclVm implements IVM {
 				ArrayValue arr = new ArrayValue(CclVm.this, new Array(CclVm.this, args));
 				
 				Scope myScope = sc.chain();
-				myScope.reserve("parameters");
-				myScope.load("parameters").setValue(arr);
 				myScope.reserve("@");
-				myScope.load("@").setValue(myScope.load("parameters"));
+				myScope.load("@").setValue(arr);
 				ArrayList<Value> oldRam = ram();
 				setRam(new ArrayList<Value>());
 				Value v;
@@ -201,8 +197,8 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void a(int size) {
-		put(new ArrayValue(this, size));
+	public void a() {
+		put(new ArrayValue(this, 0));
 	}
 
 	@Override

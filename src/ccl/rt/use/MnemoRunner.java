@@ -5,7 +5,7 @@ import io.github.coalangsoft.lib.log.Logger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
+//import java.util.HashMap;
 import java.util.Scanner;
 
 import ccl.rt.Special;
@@ -24,15 +24,12 @@ public class MnemoRunner implements Runner {
 	
 	private Func<String, Func<Void,InputStream>> streamMaker;
 	
-	private HashMap<String, Integer> marks;
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
-	private Value retVal;
 	
 	public MnemoRunner(Func<String, Func<Void, InputStream>> function){
 		this.streamMaker = function;
 		
-		marks = new HashMap<String, Integer>();
 		instructions = new ArrayList<String>();
 		arguments = new ArrayList<String>();
 	}
@@ -40,9 +37,8 @@ public class MnemoRunner implements Runner {
 	@Override
 	public void creation(InputStream cclCode){
 		Scanner s = new Scanner(cclCode);
-		int line = 0;
 		while(s.hasNextLine()){
-			creation(line++, s.nextLine().split(" "));
+			creation(s.nextLine().split(" "));
 		}
 		s.close();
 	}
@@ -50,19 +46,15 @@ public class MnemoRunner implements Runner {
 	@Override
 	public Value execute(IVM vm, Scope sc) {
 		this.sc = sc;
-		retVal = null;
 		if(vm.isDebugState()){
 			Logger.std.log("-Execute Start! Runner snapshot: " + this);
 		}
 		
-		for(int i = 0; i < instructions.size();){
+		for(int i = 0; i < instructions.size(); i++){
 			try {
-				i = execution(i, instructions.get(i), arguments.get(i), vm);
-				if(i == -1){
-					if(vm.isDebugState()){
-						Logger.std.log(">Execution done! Exit state: return (-1); retVal: " + retVal);
-					}
-					return retVal;
+				Value v = execution(instructions.get(i), arguments.get(i), vm);
+				if(v != null){
+					return v;
 				}
 			} catch (Exception e) {
 				if(vm.isDebugState()){
@@ -76,11 +68,17 @@ public class MnemoRunner implements Runner {
 		}
 		return new Expression(vm, Special.UNDEFINED);
 	}
-	private int execution(int line, String instr, String args, IVM vm) throws Exception {
+	
+	private Value execution(String instr, String args, IVM vm) throws Exception{
 		switch(instr){
-		case "mark": break;
-		case "if": return ((Number) vm.pop().getValue()).intValue() == 1 ? marks.get(args) : line+1;
-		case "goto": return marks.get(args);
+		case "nnr":
+			Value vl = vm.pop();
+			if(vl != null){
+				if(vl.getValue() != Special.UNDEFINED){
+					return vl;
+				}
+			}
+			break;
 		case "load": vm.load(args, sc); break;
 		case "putI": vm.i(args); break;
 		case "invoke": invoke(args, vm); break;
@@ -96,27 +94,22 @@ public class MnemoRunner implements Runner {
 		case "newscope": sc = vm.oScope(sc); break;
 		case "oldscope": sc = vm.cScope(sc); break;
 		case "putS": vm.s(args); break;
-		case "putA": vm.a(Integer.parseInt(args)); break;
+		case "putA": vm.a(); break;
 		case "putM": vm.m(this.create(), streamMaker.call(args), sc); break;
 		case "get": vm.put(vm.pop().getProperty(args)); break;
 		case "duplicate": vm.dup(); break;
 		case "pop":
 			Value val = vm.pop();
 			if(val instanceof Err){
-				return ret(val);
+				return val;
 			}else if(val.getValue() instanceof Err){
-				return ret((Err) val.getValue());
+				return (Err) val.getValue();
 			}
 			break;
 		case "ret":
-			retVal = vm.pop();
-			return -1;
+			return vm.pop();
 		case "reserve":
 			vm.reserve(args, sc);
-			break;
-		case "rap":
-			vm.reserve(args, sc);
-			vm.pop();
 			break;
 		case "sPut":
 			vm.sPut(args);
@@ -126,28 +119,16 @@ public class MnemoRunner implements Runner {
 			break;
 		default: throw new RuntimeException("Unknown instr: " + instr);
 		}
-		return line+1;
-	}
-
-	private int ret(Value val) {
-		retVal = val;
-		return -1;
+		return null;
 	}
 
 	private void invoke(String count, IVM vm) throws Exception {
 		vm.call(Integer.parseInt(count));
 	}
 
-	private void creation(int line, String[] split) {
+	private void creation(String[] split) {
 		instructions.add(split[0]);
 		arguments.add(Tool.link(1, split, " "));
-		if(split[0].equals("mark")){
-			if(marks.get(split[1]) != null){
-				throw new RuntimeException("Mark duplication: " + split[1]);
-			}else{
-				marks.put(split[1], line);
-			}
-		}
 	}
 
 	@Override
@@ -157,9 +138,9 @@ public class MnemoRunner implements Runner {
 
 	@Override
 	public String toString() {
-		return "MnemoRunner [streamMaker=" + streamMaker + ", marks=" + marks
-				+ ", instructions=" + instructions + ", arguments=" + arguments
-				+ ", retVal=" + retVal + "]";
+		return "MnemoRunner [streamMaker=" + streamMaker + /*", marks=" + marks
+				+*/ ", instructions=" + instructions + ", arguments=" + arguments
+				+ /*", retVal=" + retVal +*/ "]";
 	}
 
 }
