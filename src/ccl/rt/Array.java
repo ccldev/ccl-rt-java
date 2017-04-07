@@ -38,11 +38,7 @@ public class Array {
 		if(base == null){
 			return factory.call(index);
 		}
-		try{
-			return base.get(index);
-		}catch(IndexOutOfBoundsException e){
-			return new Err(vm, e);
-		}
+		return base.get(index);
 	}
 	
 	public Object get(int index){

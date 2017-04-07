@@ -1,6 +1,7 @@
 package ccl.rt;
 
 import ccl.rt.vm.IVM;
+import ccl.rt.err.Err;
 
 public class ArrayValue extends Expression {
 
@@ -20,7 +21,21 @@ public class ArrayValue extends Expression {
 		setProperty("get", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
+				try{
+					return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
+				}catch(IndexOutOfBoundsException e){
+					return new Err(vm,e);
+				}
+			}
+		});
+		setProperty("getOrDefault", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				try{
+					return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
+				}catch(IndexOutOfBoundsException e){
+					return args[1];
+				}
 			}
 		});
 		setProperty("set", new Func(vm){
