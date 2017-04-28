@@ -162,6 +162,24 @@ public class Array {
 		return new ArrayValue(vm,c);
 	}
 	
+	public boolean contains(Object o){
+		for(int i = 0; i < length(); i++){
+			if(o.equals(get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int indexOf(Object o){
+		for(int i = 0; i < length(); i++){
+			if(o.equals(get(i))){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	public String toString(){
 		Object[] arr = new Object[base.size()];
 		for(int i = 0; i < arr.length; i++){
