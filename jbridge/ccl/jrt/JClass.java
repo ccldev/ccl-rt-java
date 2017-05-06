@@ -1,5 +1,6 @@
 package ccl.jrt;
 
+import ccl.csy.CCL;
 import io.github.coalangsoft.reflect.Clss;
 
 import java.lang.reflect.Proxy;
@@ -34,7 +35,12 @@ public class JClass extends Expression {
 	public Value invoke(Value... args) {
 		if (clss.base.isInterface()) {
 			return J.invoke(vm, null, new Clss(Proxy.getProxyClass(
-					ClassLoader.getSystemClassLoader(), new Class[] { clss.base })
+					new ClassLoader() {
+						@Override
+						public Class<?> loadClass(String name) throws ClassNotFoundException {
+							return CCL.classFinder.find(name);
+						}
+					}, new Class[]{clss.base})
 					), new Value[] { new Expression(vm, 
 					new JInvocationHandler(vm, args[0])) });
 		}

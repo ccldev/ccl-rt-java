@@ -1,15 +1,11 @@
 package ccl.jrt;
 
+import ccl.rt.*;
 import io.github.coalangsoft.reflect.Clss;
 import io.github.coalangsoft.reflect.SingleCallable;
 
 import java.lang.reflect.Proxy;
 
-import ccl.rt.Array;
-import ccl.rt.Func;
-import ccl.rt.Special;
-import ccl.rt.Value;
-import ccl.rt.Expression;
 import ccl.rt.vm.IVM;
 
 public class JMethod {

@@ -1,5 +1,6 @@
 package ccl.rt.vm;
 
+import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 
 import java.io.InputStream;
@@ -14,7 +15,7 @@ public interface IVM {
 	void s(String string) throws Exception;
 	void f(String floatn) throws Exception;
 	void i(String integer) throws Exception;
-	void m(Runner r, Func<Void,InputStream> s, Scope sc) throws Exception;
+	void m(Runner r, Func<Void,IOBase<?>> s, Scope sc) throws Exception;
 	void a();
 	
 	void call(int paramCount) throws Exception;

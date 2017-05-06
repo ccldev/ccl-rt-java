@@ -1,6 +1,5 @@
 package ccl.rt.vm;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
@@ -15,14 +14,18 @@ import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.store.Scope;
+import cpa.subos.io.IOBase;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class CclVm implements IVM {
 	
 	private boolean debugState = false;
 	
 	private HashMap<Thread,ArrayList<Value>> rams;
 	private HashMap<Thread,Stack<String>> stacks;
-	
+
 	private Stack<String> stack(){
 		Thread t = Thread.currentThread();
 		Stack<String> ret = stacks.get(t);
@@ -80,7 +83,7 @@ public class CclVm implements IVM {
 	}
 
 	@Override
-	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, InputStream> f, final Scope sc) {
+	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, IOBase<?>> f, final Scope sc) {
 		final Runner runner = r.create();
 		runner.creation(f.call(null));
 		

@@ -107,7 +107,7 @@ public class ArrayValue extends Expression {
 			@Override
 			public Value invoke(Value... args) {
 				try {
-					return ((Array) ArrayValue.this.getValue()).sort();
+					return new ArrayValue(vm, ((Array) ArrayValue.this.getValue()).sort());
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -125,6 +125,22 @@ public class ArrayValue extends Expression {
 				}
 			}
 			
+		});
+		setProperty("link", new Func(vm){
+
+			@Override
+			public Value invoke(Value... args) {
+				try {
+					Array a = ((Array) ArrayValue.this.getValue()).link(
+							(Array) args[0].getValue(),
+							true
+					);
+					return new ArrayValue(vm,a);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
 		});
 	}
 	

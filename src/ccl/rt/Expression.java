@@ -1,5 +1,6 @@
 package ccl.rt;
 
+import ccl.jrt.JArray;
 import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.reflect.Clss;
 
@@ -15,7 +16,7 @@ import ccl.rt.err.Err;
 import ccl.rt.lib.Std;
 import ccl.rt.vm.IVM;
 
-public class Expression implements Value {
+public class Expression implements Value, Comparable<Expression> {
 	
 	private Object value;
 
@@ -36,6 +37,7 @@ public class Expression implements Value {
 			boolean b = (boolean) value;
 			value = b ? 1 : 0;
 		}
+
 		this.value = value;
 	}
 
@@ -56,6 +58,7 @@ public class Expression implements Value {
 		if(vm.isDebugState()){
 			Logger.std.log("Expression instance created (" + getClass() + ") " + this);
 		}
+
 	}
 
 	private void initBaseProperties() {
@@ -229,7 +232,7 @@ public class Expression implements Value {
 				@Override
 				public Value invoke(Value... args) {
 					try {
-						return Expression.this.invoke(((Array) args[0].getValue()).base.toArray(new Value[0]));
+						return Expression.this.invoke(((Array) args[0].getValue()).toArray());
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -369,4 +372,8 @@ public class Expression implements Value {
 				+ propList + ", properties=" + properties + "]";
 	}
 
+	@Override
+	public int compareTo(Expression o) {
+		return ((Comparable) this.getValue()).compareTo(o.getValue());
+	}
 }

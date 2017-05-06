@@ -1,5 +1,7 @@
 package ccl.rt.use;
 
+import cpa.subos.io.IO;
+import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 
 import java.io.File;
@@ -7,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class FileStreamFactory implements Func<Void, InputStream> {
+public class FileStreamFactory implements Func<Void, IOBase<?>> {
 
 	private File f;
 
@@ -16,12 +18,8 @@ public class FileStreamFactory implements Func<Void, InputStream> {
 	}
 	
 	@Override
-	public InputStream call(Void v) {
-		try {
-			return new FileInputStream(f);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
+	public IOBase<?> call(Void v) {
+		return IO.file(f);
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package ccl.rt.use;
 
+import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.lib.log.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 //import java.util.HashMap;
@@ -22,12 +24,12 @@ public class MnemoRunner implements Runner {
 
 	private Scope sc;
 	
-	private Func<String, Func<Void,InputStream>> streamMaker;
+	private Func<String, Func<Void,IOBase<?>>> streamMaker;
 	
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
 	
-	public MnemoRunner(Func<String, Func<Void, InputStream>> function){
+	public MnemoRunner(Func<String, Func<Void, IOBase<?>>> function){
 		this.streamMaker = function;
 		
 		instructions = new ArrayList<String>();
@@ -35,8 +37,13 @@ public class MnemoRunner implements Runner {
 	}
 	
 	@Override
-	public void creation(InputStream cclCode){
-		Scanner s = new Scanner(cclCode);
+	public void creation(IOBase<?> cclCode){
+		Scanner s = null;
+		try {
+			s = new Scanner(cclCode.reader());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		while(s.hasNextLine()){
 			creation(s.nextLine().split(" "));
 		}
