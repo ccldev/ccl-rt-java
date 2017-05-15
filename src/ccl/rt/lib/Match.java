@@ -24,4 +24,8 @@ public class Match {
 		return matcher.group(0);
 	}
 
+	public boolean is(){
+		return is;
+	}
+
 }

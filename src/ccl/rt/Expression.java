@@ -70,6 +70,7 @@ public class Expression implements Value, Comparable<Expression> {
 		propList.add("property");
 		propList.add("extend");
 		propList.add("push");
+		propList.add("native");
 	}
 
 	public Value getProperty(String name) {
@@ -314,6 +315,15 @@ public class Expression implements Value, Comparable<Expression> {
 					));
 				}
 			};
+			case "native":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
+								args[0].getValue() + "");
+					}
+				};
+
 		}
 
 		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
