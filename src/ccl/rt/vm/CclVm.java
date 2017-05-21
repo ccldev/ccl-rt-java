@@ -147,6 +147,14 @@ public class CclVm implements IVM {
 		}
 	}
 
+	public void swapAndCall(int paramCount) throws Exception {
+		Value a = pop();
+		Value b = pop();
+		put(a);
+		put(b);
+		call(paramCount);
+	}
+
 	private void prepareCallResult(Value v, ArrayList<Value> settings) throws Exception {
 		for(int i = 0; i < settings.size(); i++){
 			settings.get(i).invoke(v);

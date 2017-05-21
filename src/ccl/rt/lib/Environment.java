@@ -18,9 +18,7 @@ public class Environment {
 	}
 	
 	public static Value boolean_(IVM vm, Value v){
-		return new Expression(vm, 
-			Boolean.parseBoolean(v.getValue() + "")
-		);
+		return new Expression(vm, v.bool());
 	}
 	public static Value integer(IVM vm, Value v){
 		return new Expression(vm, 

@@ -29,5 +29,6 @@ public interface IVM {
 	String sPop();
 	int sSize();
 	boolean isDebugState();
-	
+
+    void swapAndCall(int i) throws Exception;
 }

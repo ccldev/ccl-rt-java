@@ -46,4 +46,9 @@ public class Variable implements Value{
 		return val.invoke(args);
 	}
 
+	@Override
+	public boolean bool() {
+		return val.bool();
+	}
+
 }

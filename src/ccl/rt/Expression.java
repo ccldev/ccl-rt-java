@@ -1,6 +1,8 @@
 package ccl.rt;
 
 import ccl.jrt.JArray;
+import ccl.rt.lib.Environment;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.reflect.Clss;
 
@@ -373,6 +375,23 @@ public class Expression implements Value, Comparable<Expression> {
 			return new Err(vm, new Exception(
 				"Unsupported parameter count: " + args.length
 			));
+		}
+	}
+
+	@Override
+	public boolean bool() {
+		if(getValue() instanceof Boolean){
+			return (Boolean) getValue();
+		}else if(getValue() instanceof Number){
+			return ((Number) getValue()).doubleValue() == 1;
+		}else if(getValue() instanceof String){
+			return Boolean.parseBoolean((String) getValue());
+		}else{
+			try {
+				return (Boolean) getProperty("bool").invoke().getValue();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

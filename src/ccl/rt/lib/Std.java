@@ -176,7 +176,7 @@ public class Std {
 	public static Value while0(IVM vm, Value func, Value condition) {
 		Array a = new Array(vm, 0);
 		try {
-			while(((Number) condition.invoke().getValue()).intValue() == 1){
+			while(condition.invoke().bool()){
 				a.pushValue(func.invoke());
 			}
 		} catch (Exception e) {
@@ -198,7 +198,7 @@ public class Std {
 	}
 	
 	public static Value ifGlobal(IVM vm, Value func, Value els, Value condition) throws Exception {
-		if(((Number) condition.invoke().getValue()).intValue() == 1){
+		if(condition.invoke().bool()){
 			try {
 				Value o = func.invoke();
 				if(o.getValue() != Special.UNDEFINED){
@@ -217,8 +217,7 @@ public class Std {
 	}
 
 	public static Value not(IVM vm, Expression expression) {
-		int b = ((Number) expression.getValue()).intValue();
-		return new Expression(vm, b != 1);
+		return new Expression(vm, !expression.bool());
 	}
 
 	public static Value mod(IVM vm, Value a, Value b) {

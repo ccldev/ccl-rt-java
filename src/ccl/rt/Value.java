@@ -8,5 +8,7 @@ public interface Value {
 	Object getValue();
 	List<String> getProperties();
 	Value invoke(Value... args) throws Exception;
+
+	boolean bool();
 	
 }

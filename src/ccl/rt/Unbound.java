@@ -52,6 +52,11 @@ public class Unbound implements Value {
 		return new Unbound(cpy);
 	}
 
+	@Override
+	public boolean bool() {
+		throw new RuntimeException("Not allowed to use an unbound as boolean!");
+	}
+
 	public ccl.rt.Func formFunction(IVM vm) {
 		final Func<Value,Value>[] fs = new Func[funcList.length];
 		for(int i = 0; i < fs.length; i++){

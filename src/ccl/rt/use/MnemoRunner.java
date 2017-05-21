@@ -89,6 +89,7 @@ public class MnemoRunner implements Runner {
 		case "load": vm.load(args, sc); break;
 		case "putI": vm.i(args); break;
 		case "invoke": invoke(args, vm); break;
+		case "invoke1": invoke1(args, vm); break;
 		case "store":
 			Value v = vm.pop();
 			((Variable) vm.pop()).setValue(v);
@@ -131,6 +132,9 @@ public class MnemoRunner implements Runner {
 
 	private void invoke(String count, IVM vm) throws Exception {
 		vm.call(Integer.parseInt(count));
+	}
+	private void invoke1(String count, IVM vm) throws Exception {
+		vm.swapAndCall(Integer.parseInt(count));
 	}
 
 	private void creation(String[] split) {
