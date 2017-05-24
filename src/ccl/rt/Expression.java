@@ -152,21 +152,9 @@ public class Expression implements Value, Comparable<Expression> {
 						return Std.mod(vm, Expression.this, args[0]);
 					}
 				};
-			case "equals":
-				return new Func(vm) {
-					@Override
-					public Value invoke(Value... args) {
-						try{
-							boolean res = ((Number) Expression.this.getValue()).doubleValue() == ((Number) args[0].getValue()).doubleValue();
-							return new Expression(vm,res);
-						}catch(Exception e){
-							return new Expression(vm,false);
-						}
-					}
-				};
 			}
 		}
-		
+
 		if(computeType().equals("string")){
 			switch(name){
 			case "nvp":
@@ -174,7 +162,7 @@ public class Expression implements Value, Comparable<Expression> {
 
 					@Override
 					public Value invoke(Value... args) {
-						return new NVPValue(vm, Expression.this.getValue().toString(), args[0]);
+						return Std.nvp(vm, Expression.this, args[0]);
 					}
 					
 				};
@@ -275,7 +263,7 @@ public class Expression implements Value, Comparable<Expression> {
 			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return new Expression(vm, args[0].getValue().equals(Expression.this.getValue()));
+					return Std.equals(vm, args[0], Expression.this);
 				}
 			};
 		case "push":

@@ -9,6 +9,7 @@ import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
 import ccl.rt.vm.IVM;
+import coa.std.NVPValue;
 
 public class Std {
 	
@@ -108,6 +109,10 @@ public class Std {
 				return new Err(vm, e1);
 			}
 		}
+	}
+
+	public static Value equals(IVM vm, Value a, Value b){
+		return new Expression(vm, a.getValue().equals(b.getValue()));
 	}
 
 	public static Value bind(IVM vm, Value func, Value[] args) {
@@ -216,7 +221,7 @@ public class Std {
 		return new Expression(vm, Special.UNDEFINED);
 	}
 
-	public static Value not(IVM vm, Expression expression) {
+	public static Value not(IVM vm, Value expression) {
 		return new Expression(vm, !expression.bool());
 	}
 
@@ -233,5 +238,8 @@ public class Std {
 			}
 		}
 	}
-	
+
+	public static Value nvp(IVM vm, Value a, Value b) {
+		return new NVPValue(vm, a.getValue().toString(), b);
+	}
 }

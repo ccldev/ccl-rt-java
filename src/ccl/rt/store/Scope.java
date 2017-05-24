@@ -33,8 +33,78 @@ public class Scope {
 		initCasters();
 		initStd();
 		initSpec(f);
+		initOp();
 	}
-	
+
+	private void initOp() {
+		variables.put("add", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.add(vm, args[0], args[1]);
+			}
+		});
+		variables.put("sub", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.sub(vm, args[0], args[1]);
+			}
+		});
+		variables.put("mul", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.mul(vm, args[0], args[1]);
+			}
+		});
+		variables.put("div", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.div(vm, args[0], args[1]);
+			}
+		});
+		variables.put("equals", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.equals(vm, args[0], args[1]);
+			}
+		});
+		variables.put("mod", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.mod(vm, args[0], args[1]);
+			}
+		});
+		variables.put("pow", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.pow(vm, args[0], args[1]);
+			}
+		});
+		variables.put("lss", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.lss(vm, args[0], args[1]);
+			}
+		});
+		variables.put("gtr", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.gtr(vm, args[0], args[1]);
+			}
+		});
+		variables.put("not", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.not(vm, args[0]);
+			}
+		});
+		variables.put("nvp", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.nvp(vm, args[0], args[1]);
+			}
+		});
+	}
+
 	private void initCasters() {
 		variables.put("boolean", new Func(vm){
 			@Override
