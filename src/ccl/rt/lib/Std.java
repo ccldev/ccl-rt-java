@@ -242,4 +242,8 @@ public class Std {
 	public static Value nvp(IVM vm, Value a, Value b) {
 		return new NVPValue(vm, a.getValue().toString(), b);
 	}
+
+	public static Value concat(IVM vm, Value arg, Value arg1) {
+		return new Expression(vm, ((String) arg.getValue()) + arg1.getValue());
+	}
 }

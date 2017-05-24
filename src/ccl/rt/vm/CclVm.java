@@ -15,6 +15,7 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.store.Scope;
 import cpa.subos.io.IOBase;
+import cpa.subos.io.file.FileIOBase;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -85,7 +86,9 @@ public class CclVm implements IVM {
 	@Override
 	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, IOBase<?>> f, final Scope sc) {
 		final Runner runner = r.create();
-		runner.creation(f.call(null));
+		IOBase<?> iobase = f.call(null);
+		runner.creation(iobase);
+		String path = iobase instanceof FileIOBase ? ((FileIOBase) iobase).getPath() : "UNKNOWN SOURCE";
 		
 		Func func = new Func(this){
 			
@@ -97,14 +100,21 @@ public class CclVm implements IVM {
 				myScope.reserve("@");
 				myScope.load("@").setValue(arr);
 				ArrayList<Value> oldRam = ram();
+
+				sPut(path);
 				setRam(new ArrayList<Value>());
 				Value v;
 				try {
 					v = runner.execute(CclVm.this, myScope);
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					e.printStackTrace();
+					Exception ex = StackTraceFormer.formException(e.getMessage(), CclVm.this);
+					ex.printStackTrace();
+					throw new RuntimeException(ex);
 				}
 				setRam(oldRam);
+				sPop();
+
 				return v;
 			}
 			
@@ -143,7 +153,8 @@ public class CclVm implements IVM {
 			prepareCallResult(v, settings);
 			ram().add(v);
 		}catch(RuntimeException e){
-			ram().add(new Err(this, e));
+			StackTraceFormer.formException(e.getMessage(), CclVm.this).printStackTrace();
+			throw StackTraceFormer.formException(e, CclVm.this);
 		}
 	}
 

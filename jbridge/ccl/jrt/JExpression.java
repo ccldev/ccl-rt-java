@@ -1,5 +1,6 @@
 package ccl.jrt;
 
+import ccl.rt.vm.StackTraceFormer;
 import io.github.coalangsoft.reflect.Clss;
 import io.github.coalangsoft.reflect.SpecificMethods;
 
@@ -38,8 +39,8 @@ public class JExpression extends Expression {
 		}
 		
 		if (methods.length() == 0 && f == null && innerClass == null) {
-			setValue(new Err(vm, new RuntimeException("No such native property '"
-					+ name + "' on Object " + o)));
+			setValue(new Err(vm, StackTraceFormer.formException("No such native property '"
+					+ name + "' on Object " + o, vm)));
 			return;
 		}
 
@@ -74,17 +75,6 @@ public class JExpression extends Expression {
 				r = innerClass.invoke(args);
 			}else{
 				r = J.invoke(vm, object, methods, args);
-			}
-			if(r instanceof Err){
-				Object o = ((Err) r).getValue();
-				if(o instanceof Throwable){
-					((Throwable) o).printStackTrace(System.out);
-				}else if(o instanceof List){
-					List<Throwable> t = (List<Throwable>) o;
-					for(int i = 0; i < t.size(); i++){
-						t.get(i).printStackTrace(System.out);
-					}
-				}
 			}
 			return r;
 		}catch(Exception e){

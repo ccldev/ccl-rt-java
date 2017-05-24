@@ -67,6 +67,12 @@ public class Scope {
 				return Std.equals(vm, args[0], args[1]);
 			}
 		});
+		variables.put("concat", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Std.concat(vm, args[0], args[1]);
+			}
+		});
 		variables.put("mod", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {

@@ -23,8 +23,7 @@ public class JInvocationHandler implements InvocationHandler{
 		try{
 			return base.getProperty(m.getName()).invoke(J.pack(vm, args == null ? new Object[0] : args)).getValue();
 		}catch(RuntimeException e){
-			StackTraceFormer.formException("", vm).printStackTrace(System.out);
-			throw e;
+			throw StackTraceFormer.formException(e, vm);
 		}
 	}
 

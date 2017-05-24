@@ -1,9 +1,11 @@
 package ccl.jrt;
 
+import ccl.rt.vm.StackTraceFormer;
 import io.github.coalangsoft.reflect.MultipleCallable;
 import io.github.coalangsoft.reflect.SingleCallable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import ccl.rt.Expression;
 import ccl.rt.Value;
@@ -14,7 +16,13 @@ import ccl.jrt.JMethod;
 public class J {
 
 	public static Value invoke(IVM vm, Object o, MultipleCallable<?> methods, Value[] args) {
-		ArrayList<Exception> errs = new ArrayList<Exception>();
+		ArrayList<Object> errs = new ArrayList<Object>();
+		Object[] vals = new Object[args.length];
+		for(int i = 0; i < vals.length; i++){
+			vals[i] = args[i].getValue();
+		}
+
+		errs.add("Trying to invoke " + methods + " with arguments " + Arrays.toString(vals));
 		for(int i = 0; i < methods.length(); i++){
 			SingleCallable m = methods.at(i);
 			if(m.getParameterCount() != args.length){
@@ -23,7 +31,7 @@ public class J {
 			try {
 				return new JMethod(vm, o, m).call(args);
 			} catch (Exception e) {
-				errs.add(e);
+				errs.add(StackTraceFormer.formException(e.getMessage(), vm));
 			}
 		}
 		return new Err(vm, errs);

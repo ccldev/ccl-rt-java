@@ -1,6 +1,7 @@
 package ccl.rt.vm;
 
 import cpa.subos.io.IOBase;
+import cpa.subos.io.file.FileIOBase;
 import io.github.coalangsoft.lib.data.Func;
 
 import java.io.InputStream;

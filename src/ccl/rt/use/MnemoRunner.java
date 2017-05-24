@@ -1,5 +1,6 @@
 package ccl.rt.use;
 
+import ccl.rt.vm.StackTraceFormer;
 import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.lib.log.Logger;
@@ -67,7 +68,7 @@ public class MnemoRunner implements Runner {
 				if(vm.isDebugState()){
 					Logger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
 				}
-				throw new RuntimeException(e);
+				throw new RuntimeException(StackTraceFormer.formException(e.getMessage(), vm));
 			}
 		}
 		if(vm.isDebugState()){
@@ -119,13 +120,13 @@ public class MnemoRunner implements Runner {
 		case "reserve":
 			vm.reserve(args, sc);
 			break;
-		case "sPut":
-			vm.sPut(args);
-			break;
-		case "sPop":
-			vm.sPop();
-			break;
-		default: throw new RuntimeException("Unknown instr: " + instr);
+//		case "sPut":
+//			vm.sPut(args);
+//			break;
+//		case "sPop":
+//			vm.sPop();
+//			break;
+		default: throw StackTraceFormer.formException("Unknown instr: " + instr, vm);
 		}
 		return null;
 	}
