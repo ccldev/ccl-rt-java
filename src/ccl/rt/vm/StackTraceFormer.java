@@ -5,8 +5,8 @@ import java.util.Stack;
 
 public class StackTraceFormer {
 	
-	public static Exception formException(Object msg, IVM vm){
-		Exception e = new Exception("CCL Runtime Exception: " + msg);
+	public static Exception formException(Exception msg, IVM vm){
+		Exception e = new Exception(msg);
 		
 		ArrayList<StackTraceElement> list = new ArrayList<StackTraceElement>();
 		Stack<String> clone = new Stack<String>();

@@ -14,7 +14,7 @@ public class Environment {
 	}
 	
 	public static Err error(IVM vm, Value v){
-		return new Err(vm, v);
+		return new Err(vm, new Exception(v + ""));
 	}
 	
 	public static Value boolean_(IVM vm, Value v){
@@ -63,7 +63,7 @@ public class Environment {
 			return "" + (char) ((Number) value).intValue();
 		}else if(value instanceof String){
 			return "" + value.toString().charAt(0);
-		}else return new Err(vm, value);
+		}else return new Err(vm, new Exception(value + ""));
 	}
 	
 	public static Value byte_(IVM vm, Value v){

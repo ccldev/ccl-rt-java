@@ -31,10 +31,10 @@ public class J {
 			try {
 				return new JMethod(vm, o, m).call(args);
 			} catch (Exception e) {
-				errs.add(StackTraceFormer.formException(e.getMessage(), vm));
+				errs.add(StackTraceFormer.formException(e, vm));
 			}
 		}
-		return new Err(vm, errs);
+		return new Err(vm, new Exception(errs + ""));
 	}
 
 	public static Value[] pack(IVM vm, Object[] arr){

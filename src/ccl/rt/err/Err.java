@@ -6,7 +6,7 @@ import ccl.rt.vm.StackTraceFormer;
 
 public class Err extends Expression{
 
-	public Err(IVM vm, Object value) {
+	public Err(IVM vm, Exception value) {
 		super(vm, StackTraceFormer.formException(value,vm));
 	}
 	

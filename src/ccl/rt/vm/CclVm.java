@@ -108,7 +108,7 @@ public class CclVm implements IVM {
 					v = runner.execute(CclVm.this, myScope);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Exception ex = StackTraceFormer.formException(e.getMessage(), CclVm.this);
+					Exception ex = StackTraceFormer.formException(e, CclVm.this);
 					ex.printStackTrace();
 					throw new RuntimeException(ex);
 				}
@@ -153,7 +153,7 @@ public class CclVm implements IVM {
 			prepareCallResult(v, settings);
 			ram().add(v);
 		}catch(RuntimeException e){
-			StackTraceFormer.formException(e.getMessage(), CclVm.this).printStackTrace();
+			StackTraceFormer.formException(e, CclVm.this).printStackTrace();
 			throw StackTraceFormer.formException(e, CclVm.this);
 		}
 	}

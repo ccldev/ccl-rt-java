@@ -1,6 +1,7 @@
 package ccl.rt.use;
 
 import ccl.rt.vm.StackTraceFormer;
+import ccl.v2_1.err.DebugException;
 import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.lib.log.Logger;
@@ -68,7 +69,7 @@ public class MnemoRunner implements Runner {
 				if(vm.isDebugState()){
 					Logger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
 				}
-				throw new RuntimeException(StackTraceFormer.formException(e.getMessage(), vm));
+				throw new RuntimeException(StackTraceFormer.formException(new Exception("Instruction " + i + " '" + instructions.get(i) + "'",e), vm));
 			}
 		}
 		if(vm.isDebugState()){
@@ -109,6 +110,12 @@ public class MnemoRunner implements Runner {
 		case "duplicate": vm.dup(); break;
 		case "pop":
 			Value val = vm.pop();
+
+			try{
+				vm.put(vm.pop());
+				throw new DebugException("Stack has to be empty after 'pop'");
+			}catch (RuntimeException e){}
+
 			if(val instanceof Err){
 				return val;
 			}else if(val.getValue() instanceof Err){
@@ -116,7 +123,12 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		case "ret":
-			return vm.pop();
+			Value ret = vm.pop();
+			try{
+				vm.put(vm.pop());
+				throw new DebugException("Stack has to be empty after 'ret'");
+			}catch (RuntimeException e){}
+			return ret;
 		case "reserve":
 			vm.reserve(args, sc);
 			break;
@@ -126,7 +138,7 @@ public class MnemoRunner implements Runner {
 //		case "sPop":
 //			vm.sPop();
 //			break;
-		default: throw StackTraceFormer.formException("Unknown instr: " + instr, vm);
+		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
 		return null;
 	}

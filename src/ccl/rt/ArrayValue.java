@@ -21,11 +21,7 @@ public class ArrayValue extends Expression {
 		setProperty("get", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
-				try{
-					return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
-				}catch(IndexOutOfBoundsException e){
-					return new Err(vm,e);
-				}
+				return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
 			}
 		});
 		setProperty("getOrDefault", new Func(vm){

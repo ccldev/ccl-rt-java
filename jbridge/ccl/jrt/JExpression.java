@@ -39,8 +39,8 @@ public class JExpression extends Expression {
 		}
 		
 		if (methods.length() == 0 && f == null && innerClass == null) {
-			setValue(new Err(vm, StackTraceFormer.formException("No such native property '"
-					+ name + "' on Object " + o, vm)));
+			setValue(new Err(vm, StackTraceFormer.formException(new Exception("No such native property '"
+					+ name + "' on Object " + o), vm)));
 			return;
 		}
 
