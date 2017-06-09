@@ -111,11 +111,6 @@ public class MnemoRunner implements Runner {
 		case "pop":
 			Value val = vm.pop();
 
-			try{
-				vm.put(vm.pop());
-				throw new DebugException("Stack has to be empty after 'pop'");
-			}catch (RuntimeException e){}
-
 			if(val instanceof Err){
 				return val;
 			}else if(val.getValue() instanceof Err){
@@ -124,10 +119,6 @@ public class MnemoRunner implements Runner {
 			break;
 		case "ret":
 			Value ret = vm.pop();
-			try{
-				vm.put(vm.pop());
-				throw new DebugException("Stack has to be empty after 'ret'");
-			}catch (RuntimeException e){}
 			return ret;
 		case "reserve":
 			vm.reserve(args, sc);

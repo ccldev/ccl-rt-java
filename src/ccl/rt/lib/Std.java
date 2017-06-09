@@ -191,7 +191,7 @@ public class Std {
 	}
 	
 	public static Value whileGlobal(IVM vm, Value func, Value condition) throws Exception {
-		while(((Number) condition.invoke().getValue()).intValue() == 1){
+		while(condition.invoke().bool()){
 			try {
 				Value o = func.invoke();
 				if(o.getValue() != Special.UNDEFINED){

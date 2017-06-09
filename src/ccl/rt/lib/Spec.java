@@ -1,5 +1,6 @@
 package ccl.rt.lib;
 
+import ccl.rt.vm.StackTraceFormer;
 import io.github.coalangsoft.ifw.use.InterfaceWorld;
 import io.github.coalangsoft.lib.reflect.CustomClassFinder;
 import io.github.coalangsoft.reflect.Clss;
@@ -13,7 +14,12 @@ public class Spec {
 		if(n == null){
 			n = classname;
 		}
-		return new JClass(vm, Clss.make(n, f));
+		try {
+			return new JClass(vm, Clss.make(n, f));
+		}catch(ClassNotFoundException e){
+			StackTraceFormer.formException(e, vm).printStackTrace();
+			throw e;
+		}
 	}
 	
 }
