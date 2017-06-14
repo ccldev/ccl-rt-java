@@ -1,5 +1,6 @@
-package coa.scripting.support.nashorn;
+package coa.rt.scripting.support.nashorn;
 
+import io.github.coalangsoft.lib.data.Func;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import ccl.rt.Expression;
 import ccl.rt.Value;
@@ -11,7 +12,12 @@ public class NashornMirrorValue extends Expression {
 	private IVM vm;
 
 	public NashornMirrorValue(IVM vm, ScriptObjectMirror value) {
-		super(vm, value);
+		super(vm, new Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return value;
+			}
+		});
 		this.vm = vm;
 		this.mirror = value;
 	}

@@ -1,4 +1,4 @@
-package coa.scripting;
+package coa.rt.scripting;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

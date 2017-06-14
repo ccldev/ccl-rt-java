@@ -57,7 +57,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 		this(vm,new Value[0]);
 		this.vm = vm;
 		for(int i = 0; i < size; i++){
-			add(new Expression(vm, Special.UNDEFINED));
+			add(Expression.make(vm, Special.UNDEFINED));
 		}
 	}
 	
@@ -103,7 +103,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	
 	public Value operate(String op){
 		if(length() == 0){
-			return new Expression(vm, Special.UNDEFINED);
+			return Expression.make(vm, Special.UNDEFINED);
 		}
 		Value v = getExpression(0);
 		for(int i = 1; i < length(); i++){
@@ -246,7 +246,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneChar(IVM vm, char[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -254,7 +254,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneBoolean(IVM vm, boolean[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -262,7 +262,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneByte(IVM vm, byte[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -270,7 +270,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneShort(IVM vm, short[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -278,7 +278,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneInt(IVM vm, int[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -286,7 +286,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneLong(IVM vm, long[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -294,7 +294,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneFloat(IVM vm, float[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -302,7 +302,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static Array cloneDouble(IVM vm, double[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}
@@ -310,7 +310,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private static <T> Array clone0(IVM vm, T[] o) {
 		Array ret = new Array(vm, 0);
 		for(int i = 0; i < o.length; i++){
-			ret.pushValue(new Expression(vm, o[i]));
+			ret.pushValue(Expression.make(vm, o[i]));
 		}
 		return ret;
 	}

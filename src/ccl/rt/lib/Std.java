@@ -9,110 +9,39 @@ import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
 import ccl.rt.vm.IVM;
-import coa.std.NVPValue;
 
 public class Std {
 	
 	public static Value lss(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 < b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("lss").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().lss(b.num()));
 	}
 	
 	public static Value gtr(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 > b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("gtr").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().gtr(b.num()));
 	}
 	
 	public static Value add(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 + b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("add").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().add(b.num()));
 	}
 	
 	public static Value sub(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 - b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("sub").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().sub(b.num()));
 	}
 	
 	public static Value mul(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 * b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("mul").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().mul(b.num()));
 	}
 	
 	public static Value div(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 / b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("div").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().div(b.num()));
 	}
 	
 	public static Value pow(IVM vm, Value a, Value b){
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, Math.pow(a1,b1));
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("pow").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
+		return new Expression(vm, a.num().pow(b.num()));
 	}
 
 	public static Value equals(IVM vm, Value a, Value b){
-		return new Expression(vm, a.getValue().equals(b.getValue()));
+		return Expression.make(vm, a.getValue().equals(b.getValue()));
 	}
 
 	public static Value bind(IVM vm, Value func, Value[] args) {
@@ -139,7 +68,7 @@ public class Std {
 			long b = ((Number) args[1].getValue()).longValue();
 			for(long i = a; i <= b; i++){
 				try {
-					Value o = func.invoke(new Expression(vm, i));
+					Value o = func.invoke(Expression.make(vm, i));
 					if(o.getValue() != Special.UNDEFINED){
 						return o;
 					}
@@ -148,7 +77,7 @@ public class Std {
 		}else{
 			return new Err(vm, new RuntimeException("Unexpected params count: " + args.length));
 		}
-		return new Expression(vm, Special.UNDEFINED);
+		return Expression.make(vm, Special.UNDEFINED);
 	}
 	
 	public static Value for_(IVM vm, Value func, Value[] args){
@@ -167,7 +96,7 @@ public class Std {
 			long b = ((Number) args[1].getValue()).longValue();
 			for(long i = a; i <= b; i++){
 				try {
-					ret.pushValue(func.invoke(new Expression(vm, i)));
+					ret.pushValue(func.invoke(Expression.make(vm, i)));
 				} catch (Exception e) {
 					ret.pushValue(new Err(vm, e));
 				}
@@ -181,7 +110,7 @@ public class Std {
 	public static Value while0(IVM vm, Value func, Value condition) {
 		Array a = new Array(vm, 0);
 		try {
-			while(condition.invoke().bool()){
+			while(condition.invoke().bool().get()){
 				a.pushValue(func.invoke());
 			}
 		} catch (Exception e) {
@@ -191,7 +120,7 @@ public class Std {
 	}
 	
 	public static Value whileGlobal(IVM vm, Value func, Value condition) throws Exception {
-		while(condition.invoke().bool()){
+		while(condition.invoke().bool().get()){
 			try {
 				Value o = func.invoke();
 				if(o.getValue() != Special.UNDEFINED){
@@ -199,11 +128,11 @@ public class Std {
 				}
 			} catch (Exception e) {}
 		}
-		return new Expression(vm, Special.UNDEFINED);
+		return Expression.make(vm, Special.UNDEFINED);
 	}
 	
 	public static Value ifGlobal(IVM vm, Value func, Value els, Value condition) throws Exception {
-		if(condition.invoke().bool()){
+		if(condition.invoke().bool().get()){
 			try {
 				Value o = func.invoke();
 				if(o.getValue() != Special.UNDEFINED){
@@ -218,32 +147,18 @@ public class Std {
 				}
 			} catch (Exception e) {}
 		}
-		return new Expression(vm, Special.UNDEFINED);
+		return Expression.make(vm, Special.UNDEFINED);
 	}
 
 	public static Value not(IVM vm, Value expression) {
-		return new Expression(vm, !expression.bool());
+		return new Expression(vm, expression.bool().not());
 	}
 
 	public static Value mod(IVM vm, Value a, Value b) {
-		try{
-			double a1 = ((Number) a.getValue()).doubleValue();
-			double b1 = ((Number) b.getValue()).doubleValue();
-			return new Expression(vm, a1 % b1);
-		}catch(ClassCastException e){
-			try {
-				return b.getProperty("div").invoke(a);
-			} catch (Exception e1) {
-				return new Err(vm, e1);
-			}
-		}
-	}
-
-	public static Value nvp(IVM vm, Value a, Value b) {
-		return new NVPValue(vm, a.getValue().toString(), b);
+		return new Expression(vm, a.num().mod(b.num()));
 	}
 
 	public static Value concat(IVM vm, Value arg, Value arg1) {
-		return new Expression(vm, ((String) arg.getValue()) + arg1.getValue());
+		return Expression.make(vm, ((String) arg.getValue()) + arg1.getValue());
 	}
 }

@@ -1,4 +1,4 @@
-package coa.scripting.support.nashorn;
+package coa.rt.scripting.support.nashorn;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 

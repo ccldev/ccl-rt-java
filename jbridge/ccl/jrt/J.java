@@ -40,7 +40,7 @@ public class J {
 	public static Value[] pack(IVM vm, Object[] arr){
 		Value[] ret = new Value[arr.length];
 		for(int i = 0; i < arr.length; i++){
-			ret[i] = new Expression(vm, arr[i]);
+			ret[i] = Expression.make(vm, arr[i]);
 		}
 		return ret;
 	}

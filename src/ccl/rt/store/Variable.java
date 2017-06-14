@@ -3,6 +3,9 @@ package ccl.rt.store;
 import java.util.List;
 
 import ccl.rt.Value;
+import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
+import io.github.coalangsoft.lib.dynamic.DynamicDouble;
+import io.github.coalangsoft.lib.dynamic.DynamicObject;
 
 public class Variable implements Value{
 
@@ -47,8 +50,13 @@ public class Variable implements Value{
 	}
 
 	@Override
-	public boolean bool() {
+	public DynamicBoolean bool() {
 		return val.bool();
+	}
+
+	@Override
+	public DynamicDouble num() {
+		return new DynamicObject(getValue()).num();
 	}
 
 }

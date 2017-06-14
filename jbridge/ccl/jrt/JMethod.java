@@ -46,7 +46,7 @@ public class JMethod {
 				arr[i] = ptypes[i].base.cast(args[i].getValue());
 			}
 		}
-		return new Expression(vm, method.call(arr));
+		return Expression.make(vm, method.call(arr));
 		
 	}
 

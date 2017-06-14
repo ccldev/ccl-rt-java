@@ -1,4 +1,4 @@
-package coa.scripting.support.nashorn;
+package coa.rt.scripting.support.nashorn;
 
 import io.github.coalangsoft.lib.data.Func;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -25,11 +25,11 @@ public class NashornValueWrapper implements Func<Object, Value> {
 				return new NashornArrayValue(vm, m);
 			}
 			if(ScriptObjectMirror.isUndefined(m)){
-				return new Expression(vm, Special.UNDEFINED);
+				return Expression.make(vm, Special.UNDEFINED);
 			}
 			return new NashornMirrorValue(vm, m);
 		}
-		return new Expression(vm, p);
+		return Expression.make(vm, p);
 	}
 
 }

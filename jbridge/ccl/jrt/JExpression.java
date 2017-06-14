@@ -1,6 +1,7 @@
 package ccl.jrt;
 
 import ccl.rt.vm.StackTraceFormer;
+import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.reflect.Clss;
 import io.github.coalangsoft.reflect.SpecificMethods;
 
@@ -22,7 +23,12 @@ public class JExpression extends Expression {
 	private IVM vm;
 	
 	public JExpression(IVM vm, Object o, Clss c, String name) {
-		super(vm, Special.INVALID);
+		super(vm, new Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return Special.INVALID;
+			}
+		});
 		this.vm = vm;
 		
 		this.object = o;

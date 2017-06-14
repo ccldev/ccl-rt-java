@@ -1,4 +1,4 @@
-package coa.scripting;
+package coa.rt.scripting;
 
 import io.github.coalangsoft.lib.data.Func;
 
@@ -15,7 +15,12 @@ public class ScriptEngineValue extends Expression {
 	private IVM vm;
 	
 	public ScriptEngineValue(IVM vm, ScriptEngine e, Func<Object,Value> w) {
-		super(vm, e);
+		super(vm, new Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return e;
+			}
+		});
 		this.vm = vm;
 		this.engine = e;
 		this.wrapper = w;
@@ -27,7 +32,7 @@ public class ScriptEngineValue extends Expression {
 		if(wrapper != null){
 			return wrapper.call(o);
 		}
-		return new Expression(vm, o);
+		return Expression.make(vm, o);
 	}
 
 }

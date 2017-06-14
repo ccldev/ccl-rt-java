@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
-import coa.std.NVP;
-
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Unbound;
 import ccl.rt.Value;
-import ccl.rt.err.Err;
 import ccl.rt.store.Scope;
+import coa.rt.Nvp;
 import cpa.subos.io.IOBase;
 import cpa.subos.io.file.FileIOBase;
 
@@ -70,17 +68,17 @@ public class CclVm implements IVM {
 
 	@Override
 	public void s(String string) {
-		ram().add(new Expression(this, StringPrepare.prepare(string)));
+		ram().add(Expression.make(this, StringPrepare.prepare(string)));
 	}
 
 	@Override
 	public void f(String floatn) {
-		ram().add(new Expression(this, Double.parseDouble(floatn)));
+		ram().add(Expression.make(this, Double.parseDouble(floatn)));
 	}
 
 	@Override
 	public void i(String integer) {
-		ram().add(new Expression(this, Long.parseLong(integer)));
+		ram().add(Expression.make(this, Long.parseLong(integer)));
 	}
 
 	@Override
@@ -137,7 +135,7 @@ public class CclVm implements IVM {
 		
 		for(int i = 0; i < args.length; i++){
 			Value v = args[i];
-			if(v.getValue() instanceof NVP){
+			if(v instanceof Nvp){
 				settings.add(v);
 			}else if(v instanceof Unbound){
 				params.add(((Unbound) v).formFunction(this));

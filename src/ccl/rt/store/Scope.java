@@ -1,10 +1,12 @@
 package ccl.rt.store;
 
+import coa.rt.Nvp;
+import coa.rt.NvpVal;
 import io.github.coalangsoft.lib.reflect.CustomClassFinder;
 
 import java.util.HashMap;
 
-import coa.scripting.EvalSetup;
+import coa.rt.scripting.EvalSetup;
 
 import ccl.rt.Expression;
 import ccl.rt.Func;
@@ -17,7 +19,6 @@ import ccl.rt.lib.Spec;
 import ccl.rt.lib.Std;
 import ccl.rt.thread.ThreadDataExpression;
 import ccl.rt.vm.IVM;
-import ccl.rt.vm.ScopeVal;
 
 public class Scope {
 	
@@ -103,10 +104,10 @@ public class Scope {
 				return Std.not(vm, args[0]);
 			}
 		});
-		variables.put("nvp", new Func(vm){
+		variables.put("nvp", new Func(vm) {
 			@Override
 			public Value invoke(Value... args) {
-				return Std.nvp(vm, args[0], args[1]);
+				return Nvp.makeNvp(vm, new NvpVal(args[0], args[1]));
 			}
 		});
 	}
@@ -174,7 +175,7 @@ public class Scope {
 		});
 	}
 	private void initSpec(final CustomClassFinder f) {
-		load("java").setValue(new Func(vm){
+		reserve("java").setValue(new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
 				try {
@@ -184,16 +185,16 @@ public class Scope {
 				}
 			}
 		});
-		load("scope").setValue(new ScopeVal(vm, this));
 		try{
-			load("eval").setValue((Value) EvalSetup.reflectEvalSupport(vm));
+			reserve("eval").setValue((Value) EvalSetup.reflectEvalSupport(vm));
 		}catch(Exception e){}
 	}
 	private void initStd() {
-		load("false").setValue(new Expression(vm, false));
-		load("true").setValue(new Expression(vm, true));
-		load("null").setValue(new Expression(vm, Special.NULL));
-		load("while").setValue(new Func(vm){
+		reserve("undefined").setValue(Expression.make(vm, Special.UNDEFINED));
+		reserve("false").setValue(Expression.make(vm, false));
+		reserve("true").setValue(Expression.make(vm, true));
+		reserve("null").setValue(Expression.make(vm, Special.NULL));
+		reserve("while").setValue(new Func(vm){
 
 			@Override
 			public Value invoke(Value... args) {
@@ -213,7 +214,7 @@ public class Scope {
 			}
 			
 		});
-		load("if").setValue(new Func(vm){
+		reserve("if").setValue(new Func(vm){
 
 			@Override
 			public Value invoke(Value... args) {
@@ -233,7 +234,7 @@ public class Scope {
 			}
 			
 		});
-		load("for").setValue(new Func(vm){
+		reserve("for").setValue(new Func(vm){
 
 			@Override
 			public Value invoke(Value... args) {
@@ -307,8 +308,7 @@ public class Scope {
 		Value v = variables.get(name);
 		if(v == null){
 			if(isGlobal()){
-				self.reserve(name);
-				return self;
+				throw new RuntimeException("Variable not found: " + name);
 			}else{
 				return parent().load0(self, name);
 			}
@@ -318,7 +318,7 @@ public class Scope {
 	}
 	
 	public Variable reserve(String name) {
-		variables.put(name, new Expression(vm, Special.UNDEFINED));
+		variables.put(name, Expression.make(vm, Special.UNDEFINED));
 		return load(name);
 	}
 	

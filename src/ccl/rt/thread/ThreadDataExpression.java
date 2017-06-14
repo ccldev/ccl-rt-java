@@ -12,7 +12,12 @@ public class ThreadDataExpression extends Expression {
 	private IVM vm;
 
 	public ThreadDataExpression(IVM vm, Thread t) {
-		super(vm, Special.INVALID);
+		super(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return Special.UNDEFINED;
+			}
+		});
 		this.vm = vm;
 		this.data = new ThreadData(t);
 		setValue(data);
@@ -29,7 +34,7 @@ public class ThreadDataExpression extends Expression {
 							args[1].getValue().toString(),
 							args[2]
 						);
-						return new Expression(vm, Special.UNDEFINED);
+						return Expression.make(vm, Special.UNDEFINED);
 					}
 				};
 			}else if(p.equals("read")){

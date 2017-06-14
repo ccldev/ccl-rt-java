@@ -1,4 +1,4 @@
-package coa.scripting;
+package coa.rt.scripting;
 
 import io.github.coalangsoft.lib.data.Func;
 
@@ -24,7 +24,7 @@ public class ScriptValueWrappers {
 	@SuppressWarnings("unchecked")
 	public static void init(IVM vm){
 		try {
-			map.put((Class<? extends ScriptEngine>) Class.forName("jdk.nashorn.api.scripting.NashornScriptEngine"), (Func<Object, Value>) Class.forName("coa.scripting.support.nashorn.NashornValueWrapper").getConstructor(IVM.class).newInstance(vm));
+			map.put((Class<? extends ScriptEngine>) Class.forName("jdk.nashorn.api.scripting.NashornScriptEngine"), (Func<Object, Value>) Class.forName("coa.rt.scripting.support.nashorn.NashornValueWrapper").getConstructor(IVM.class).newInstance(vm));
 		} catch (Exception e) {}
 	}
 

@@ -5,6 +5,8 @@ import io.github.coalangsoft.lib.data.Func;
 import ccl.rt.unbound.UnboundGetFunc;
 import ccl.rt.unbound.UnboundInvokeFunc;
 import ccl.rt.vm.IVM;
+import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
+import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 
 import java.util.List;
 
@@ -53,8 +55,13 @@ public class Unbound implements Value {
 	}
 
 	@Override
-	public boolean bool() {
+	public DynamicBoolean bool() {
 		throw new RuntimeException("Not allowed to use an unbound as boolean!");
+	}
+
+	@Override
+	public DynamicDouble num() {
+		throw new RuntimeException("Not allowed to use an unbound as number!");
 	}
 
 	public ccl.rt.Func formFunction(IVM vm) {

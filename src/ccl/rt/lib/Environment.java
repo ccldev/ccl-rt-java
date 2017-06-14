@@ -10,7 +10,7 @@ import ccl.rt.vm.IVM;
 public class Environment {
 	
 	public static Value regex(IVM vm, Value regex){
-		return new Expression(vm, new Regex(regex.getValue().toString()));
+		return Expression.make(vm, new Regex(regex.getValue().toString()));
 	}
 	
 	public static Err error(IVM vm, Value v){
@@ -21,24 +21,24 @@ public class Environment {
 		return new Expression(vm, v.bool());
 	}
 	public static Value integer(IVM vm, Value v){
-		return new Expression(vm, 
+		return Expression.make(vm,
 			(long) Double.parseDouble(v.getValue() + "")
 		);
 	}
 	public static Value char2int(IVM vm, Value v){
 		Object o = v.getValue();
 		if(o instanceof Character){
-			return new Expression(vm, (int) ((Character) o).charValue());
+			return Expression.make(vm, (int) ((Character) o).charValue());
 		}
 		if(o instanceof Number){
-			return new Expression(vm, ((Number) o).intValue());
+			return Expression.make(vm, ((Number) o).intValue());
 		}
-		return new Expression(vm, 
+		return Expression.make(vm,
 			(int) (v.getValue() + "").charAt(0)
 		);
 	}
 	public static Value float_(IVM vm, Value v){
-		return new Expression(vm, 
+		return Expression.make(vm,
 			Double.parseDouble(v.getValue() + "")
 		);
 	}
@@ -52,10 +52,10 @@ public class Environment {
 		if(val.getClass().isArray()){
 			return Array.clone(vm, val);
 		}
-		return new Array(vm,new Value[]{new Expression(vm,val)});
+		return new Array(vm,new Value[]{Expression.make(vm,val)});
 	}
 	public static Value char_(IVM vm, Value v){
-		return new Expression(vm, char0(vm, v.getValue()));
+		return Expression.make(vm, char0(vm, v.getValue()));
 	}
 
 	private static Object char0(IVM vm, Object value) {
@@ -67,7 +67,7 @@ public class Environment {
 	}
 	
 	public static Value byte_(IVM vm, Value v){
-		return new Expression(vm, ((Number) v.getValue()).byteValue());
+		return Expression.make(vm, ((Number) v.getValue()).byteValue());
 	}
 	
 }

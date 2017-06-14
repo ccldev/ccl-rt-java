@@ -3,6 +3,8 @@ package ccl.rt;
 import ccl.jrt.JArray;
 import ccl.rt.lib.Environment;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import io.github.coalangsoft.lib.data.ConstantFunc;
+import io.github.coalangsoft.lib.dynamic.DynamicObject;
 import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.reflect.Clss;
 
@@ -10,22 +12,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import coa.std.NVPValue;
-
 import ccl.jrt.JClass;
 import ccl.jrt.JExpression;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Std;
 import ccl.rt.vm.IVM;
 
-public class Expression implements Value, Comparable<Expression> {
-	
-	private Object value;
+public class Expression extends DynamicObject<Object> implements Value, Comparable<Expression> {
 
 	private ArrayList<String> propList;
 	private HashMap<String, Value> properties;
 
 	private IVM vm;
+
+	protected void setValue(final Object o){
+		func = new io.github.coalangsoft.lib.data.Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return o;
+			}
+		};
+	}
+
+	protected void setValueFunc(io.github.coalangsoft.lib.data.Func<Void, Object> val){
+		func = val;
+	}
 
 	protected void setProperty(String name, Value value) {
 		if (!propList.contains(name)) {
@@ -34,26 +45,27 @@ public class Expression implements Value, Comparable<Expression> {
 		properties.put(name, value);
 	}
 
-	protected void setValue(Object value) {
-		if(value instanceof Boolean){
-			boolean b = (boolean) value;
-			value = b ? 1 : 0;
-		}
-
-		this.value = value;
-	}
-
 	protected boolean contains(String name) {
 		return properties.get(name) != null;
 	}
 	
-	public Expression(IVM vm, Object value) {
-		setValue(value);
+	public static Expression make(IVM vm, Object value) {
+		return new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return value;
+			}
+		});
+	}
+
+	public Expression(IVM vm, io.github.coalangsoft.lib.data.Func<Void, ? extends Object> value) {
+		super(new ConstantFunc(value));
+
 		this.vm = vm;
 		this.propList = new ArrayList<String>();
 		this.properties = new HashMap<String, Value>();
 		initBaseProperties();
-		
+
 		if(vm == null){
 			return;
 		}
@@ -86,7 +98,7 @@ public class Expression implements Value, Comparable<Expression> {
 			try{
 				double d = Double.parseDouble("0." + name);
 				double i = ((Number) Expression.this.getValue()).intValue();
-				return new Expression(vm,d+i);
+				return Expression.make(vm,d+i);
 			}catch(NumberFormatException e){}
 			switch (name) {
 			case "not":
@@ -155,20 +167,6 @@ public class Expression implements Value, Comparable<Expression> {
 			}
 		}
 
-		if(computeType().equals("string")){
-			switch(name){
-			case "nvp":
-				return new Func(vm) {
-
-					@Override
-					public Value invoke(Value... args) {
-						return Std.nvp(vm, Expression.this, args[0]);
-					}
-					
-				};
-			}
-		}
-
 		switch (name) {
 		case "bind":
 			return new Func(vm) {
@@ -210,11 +208,11 @@ public class Expression implements Value, Comparable<Expression> {
 				@Override
 				public Value invoke(Value... args) {
 					Expression.this.setProperty(args[0].getValue() + "", args[1]);
-					return new Expression(vm, Special.UNDEFINED);
+					return Expression.make(vm, Special.UNDEFINED);
 				}
 			};
 		case "type":
-			return new Expression(vm, computeType());
+			return Expression.make(vm, computeType());
 		case "properties":
 			return new ArrayValue(vm, Array.clone(vm, propList.toArray(new String[0])));
 		case "invoke":
@@ -295,7 +293,7 @@ public class Expression implements Value, Comparable<Expression> {
 							public Value call(Integer p) {
 								// TODO Auto-generated method stub
 								try {
-									return Expression.this.invoke(new Expression(vm,p));
+									return Expression.this.invoke(Expression.make(vm,p));
 								} catch (Exception e) {
 									throw new RuntimeException(e);
 								}
@@ -309,18 +307,43 @@ public class Expression implements Value, Comparable<Expression> {
 				return new Func(vm) {
 					@Override
 					public Value invoke(Value... args) {
+						Object value = get();
 						return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
 								args[0].getValue() + "");
+					}
+				};
+			case "f":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args0) {
+						Value argFunc = args0[0];
+						return new Func(vm) {
+							@Override
+							public Value invoke(Value... args1) {
+								try {
+									return argFunc.invoke(Expression.this.invoke(args1));
+								} catch (Exception e) {
+									throw new RuntimeException(e);
+								}
+							}
+						};
 					}
 				};
 
 		}
 
+		if(this instanceof ArrayValue){
+			throw new RuntimeException("property not found on array: " + name);
+		}
+
+		Object value = get();
 		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
 				name);
 	}
 
 	private String computeType() {
+		Object value = get();
+
 		if (this instanceof Err || value instanceof Err)
 			return "error";
 		if (value instanceof Throwable)
@@ -347,7 +370,7 @@ public class Expression implements Value, Comparable<Expression> {
 	}
 
 	public Object getValue() {
-		return value;
+		return get();
 	}
 
 	public final List<String> getProperties() {
@@ -367,25 +390,8 @@ public class Expression implements Value, Comparable<Expression> {
 	}
 
 	@Override
-	public boolean bool() {
-		if(getValue() instanceof Boolean){
-			return (Boolean) getValue();
-		}else if(getValue() instanceof Number){
-			return ((Number) getValue()).doubleValue() == 1;
-		}else if(getValue() instanceof String){
-			return Boolean.parseBoolean((String) getValue());
-		}else{
-			try {
-				return (Boolean) getProperty("bool").invoke().getValue();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	@Override
 	public String toString() {
-		return getClass().getName() + " [value=" + value + ", propList="
+		return getClass().getName() + " [value=" + get() + ", propList="
 				+ propList + ", properties=" + properties + "]";
 	}
 

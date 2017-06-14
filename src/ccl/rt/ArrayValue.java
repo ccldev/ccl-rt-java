@@ -141,13 +141,18 @@ public class ArrayValue extends Expression {
 	}
 	
 	public ArrayValue(IVM vm, int size) {
-		super(vm, new Array(vm, size));
+		this(vm, new Array(vm, size));
 		this.vm = vm;
 		init();
 	}
 	
 	public ArrayValue(IVM vm, Array a){
-		super(vm, a);
+		super(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return a;
+			}
+		});
 		init();
 	}
 	

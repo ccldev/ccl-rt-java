@@ -75,7 +75,7 @@ public class MnemoRunner implements Runner {
 		if(vm.isDebugState()){
 			Logger.std.log(">Execution done! Exit state: normal");
 		}
-		return new Expression(vm, Special.UNDEFINED);
+		return Expression.make(vm, Special.UNDEFINED);
 	}
 	
 	private Value execution(String instr, String args, IVM vm) throws Exception{

@@ -1,6 +1,7 @@
 package ccl.jrt;
 
 import ccl.csy.CCL;
+import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.reflect.Clss;
 
 import java.lang.reflect.Proxy;
@@ -15,7 +16,12 @@ public class JClass extends Expression {
 	private IVM vm;
 
 	public JClass(IVM vm, Clss value) {
-		super(vm, value);
+		super(vm, new Func<Void, Object>() {
+			@Override
+			public Object call(Void aVoid) {
+				return value;
+			}
+		});
 		this.vm = vm;
 		clss = value;
 	}
@@ -41,7 +47,7 @@ public class JClass extends Expression {
 							return CCL.classFinder.find(name);
 						}
 					}, new Class[]{clss.base})
-					), new Value[] { new Expression(vm, 
+					), new Value[] { Expression.make(vm,
 					new JInvocationHandler(vm, args[0])) });
 		}
 		
