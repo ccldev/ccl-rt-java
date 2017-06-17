@@ -101,8 +101,8 @@ public class MnemoRunner implements Runner {
 			Value value = vm.pop();
 			var.setValue(value);
 			break;
-		case "newscope": sc = vm.oScope(sc); break;
-		case "oldscope": sc = vm.cScope(sc); break;
+//		case "newscope": sc = vm.oScope(sc); break;
+//		case "oldscope": sc = vm.cScope(sc); break;
 		case "putS": vm.s(args); break;
 		case "putA": vm.a(); break;
 		case "putM": vm.m(this.create(), streamMaker.call(args), sc); break;
