@@ -88,21 +88,29 @@ public class MnemoRunner implements Runner {
 				}
 			}
 			break;
+		case "nnr2":
+			Value v = vm.pop();
+			if(v != null){
+				if(v.getValue() != Special.UNDEFINED){
+					return v;
+				}else{
+					vm.put(v);
+				}
+			}
+			break;
 		case "load": vm.load(args, sc); break;
 		case "putI": vm.i(args); break;
 		case "invoke": invoke(args, vm); break;
 		case "invoke1": invoke1(args, vm); break;
 		case "store":
-			Value v = vm.pop();
-			((Variable) vm.pop()).setValue(v);
+			Value va = vm.pop();
+			((Variable) vm.pop()).setValue(va);
 			break;
 		case "store1":
 			Variable var = (Variable) vm.pop();
 			Value value = vm.pop();
 			var.setValue(value);
 			break;
-//		case "newscope": sc = vm.oScope(sc); break;
-//		case "oldscope": sc = vm.cScope(sc); break;
 		case "putS": vm.s(args); break;
 		case "putA": vm.a(); break;
 		case "putM": vm.m(this.create(), streamMaker.call(args), sc); break;
@@ -123,12 +131,6 @@ public class MnemoRunner implements Runner {
 		case "reserve":
 			vm.reserve(args, sc);
 			break;
-//		case "sPut":
-//			vm.sPut(args);
-//			break;
-//		case "sPop":
-//			vm.sPop();
-//			break;
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
 		return null;

@@ -224,8 +224,9 @@ public class Scope {
 					@Override
 					public Value invoke(Value... args) {
 						try {
-							return Std.ifGlobal(vm,args[0],args[1],cnd);
+							return Std.ifGlobal(vm,args[0],args.length < 2 ? null : args[1],cnd);
 						} catch (Exception e) {
+							e.printStackTrace();
 							return new Err(vm,e);
 						}
 					}

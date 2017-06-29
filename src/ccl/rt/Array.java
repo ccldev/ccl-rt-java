@@ -15,6 +15,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 
 	private io.github.coalangsoft.lib.data.Func<Integer,Value> factory;
 	private IVM vm;
+	private int specLength = Integer.MAX_VALUE;
 
 	public Array(IVM vm, Value[] values){
 		super(new SequenceTool<Value,Array>(new io.github.coalangsoft.lib.data.Func<Value[], Array>() {
@@ -66,6 +67,12 @@ public class Array extends ModifiableSequence<Value,Array> {
 		this.vm = vm;
 		this.factory = factory;
 	}
+	public Array(IVM vm, io.github.coalangsoft.lib.data.Func<Integer,Value> factory, int size){
+		this(vm);
+		this.vm = vm;
+		this.factory = factory;
+		specLength = size;
+	}
 
 	public Value getExpression(int index){
 		if(values == null){
@@ -82,7 +89,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 		if(values != null){
 			return values.length;
 		}else{
-			return Integer.MAX_VALUE;
+			return specLength;
 		}
 	}
 	

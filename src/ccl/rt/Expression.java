@@ -4,6 +4,7 @@ import ccl.jrt.JArray;
 import ccl.rt.lib.Environment;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.github.coalangsoft.lib.data.ConstantFunc;
+import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
 import io.github.coalangsoft.lib.log.Logger;
 import io.github.coalangsoft.reflect.Clss;
@@ -299,7 +300,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 								}
 							}
 						
-						}
+						}, args.length >= 1 ? args[0].num().get().intValue() : Integer.MAX_VALUE
 					));
 				}
 			};
@@ -349,7 +350,6 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		if (value instanceof Throwable)
 			return "error";
 		if (value instanceof Boolean){
-			System.err.println("RUNTIME WARNING: Type 'boolean' should not be used!");
 			return "boolean";
 		}
 		if (this instanceof JClass)
@@ -398,5 +398,23 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 	@Override
 	public int compareTo(Expression o) {
 		return ((Comparable) this.getValue()).compareTo(o.getValue());
+	}
+
+	public DynamicBoolean bool(){
+		return new DynamicBoolean(new io.github.coalangsoft.lib.data.Func<Void, Boolean>() {
+			@Override
+			public Boolean call(Void aVoid) {
+				switch (computeType()){
+					case "boolean":
+						return (Boolean) get();
+					case "string":
+						return Boolean.parseBoolean(get().toString());
+					case "number":
+						return ((Number) get()).intValue() == 1;
+					default:
+						throw new RuntimeException("Can not convert to boolean: " + get());
+				}
+			}
+		});
 	}
 }

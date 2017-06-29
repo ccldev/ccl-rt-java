@@ -25,10 +25,11 @@ public interface IVM {
 	void load(String var, Scope s);
 	void put(Value property);
 	void reserve(String var, Scope s);
-	
+
 	void sPut(String funcName);
 	String sPop();
 	int sSize();
+
 	boolean isDebugState();
 
     void swapAndCall(int i) throws Exception;
