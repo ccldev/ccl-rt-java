@@ -51,6 +51,13 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 	}
 	
 	public static Expression make(IVM vm, Object value) {
+		if(value != null){
+			if(value instanceof Array){
+				return new ArrayValue(vm, (Array) value);
+			}if(value.getClass().isArray()){
+				return new ArrayValue(vm, Array.clone(vm, value));
+			}
+		}
 		return new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
 			@Override
 			public Object call(Void aVoid) {

@@ -8,6 +8,12 @@ public class ArrayValue extends Expression {
 	private IVM vm;
 
 	private void init(){
+		setProperty("length", new Func(vm) {
+			@Override
+			public Value invoke(Value... args) {
+				return Expression.make(vm, ((Array) ArrayValue.this.getValue()).length());
+			}
+		});
 		setProperty("push", new Func(vm){
 			@Override
 			public Value invoke(Value... args) {
