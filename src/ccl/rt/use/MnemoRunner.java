@@ -1,5 +1,8 @@
 package ccl.rt.use;
 
+import ccl.rt.*;
+import ccl.rt.lib.Environment;
+import ccl.rt.lib.Std;
 import ccl.rt.vm.StackTraceFormer;
 import ccl.v2_1.err.DebugException;
 import cpa.subos.io.IOBase;
@@ -12,15 +15,11 @@ import java.util.ArrayList;
 //import java.util.HashMap;
 import java.util.Scanner;
 
-import ccl.rt.Special;
-import ccl.rt.Tool;
-import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.store.Scope;
 import ccl.rt.store.Variable;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
-import ccl.rt.Expression;
 
 public class MnemoRunner implements Runner {
 
@@ -80,6 +79,89 @@ public class MnemoRunner implements Runner {
 	
 	private Value execution(String instr, String args, IVM vm) throws Exception{
 		switch(instr){
+		//For better performance
+		case "__whiletrue": {
+			Value func = vm.pop();
+			while (true) {
+				Value v;
+				if ((v = func.invoke()).getValue() != Special.UNDEFINED) {
+					return v;
+				}
+			}
+		}
+		case "__while": {
+			Value action = vm.pop();
+			Value condition = vm.pop();
+			Std.whileGlobal(vm, action, condition);
+			break;
+		}
+		case "__forarr": {
+			Value action = vm.pop();
+			Array array = (Array) vm.pop().getValue();
+			for (int i = 0; i < array.length(); i++) {
+				Value v;
+				if ((v = action.invoke()).getValue() != Special.UNDEFINED) {
+					return v;
+				}
+			}
+			break;
+		}
+		case "__fornum": {
+			Value action = vm.pop();
+			int numto = vm.pop().num().get().intValue();
+			int numfrom = vm.pop().num().get().intValue();
+			for (int i = numfrom; i < numto + 1; i++) {
+				Value v;
+				if ((v = action.invoke(Expression.make(vm, i))).getValue() != Special.UNDEFINED) {
+					return v;
+				}
+			}
+			break;
+		}
+		case "__whiletrue_nb": {
+			Value func = vm.pop();
+			while (true) {
+				func.invoke();
+			}
+		}
+		case "__while_nb": {
+			Value action = vm.pop();
+			Value condition = vm.pop();
+			while(condition.invoke().bool().get()){
+				action.invoke();
+			}
+			break;
+		}
+		case "__forarr_nb": {
+			Value action = vm.pop();
+			Array array = (Array) vm.pop().getValue();
+			for (int i = 0; i < array.length(); i++) {
+				action.invoke();
+			}
+			break;
+		}
+		case "__fornum_nb": {
+			Value action = vm.pop();
+			int numto = vm.pop().num().get().intValue();
+			int numfrom = vm.pop().num().get().intValue();
+			for (int i = numfrom; i < numto + 1; i++) {
+				action.invoke(Expression.make(vm, i));
+			}
+			break;
+		}
+		case "__println":
+			System.out.println(vm.pop().getValue());
+			break;
+		case "__println_f":
+			vm.put(new ccl.rt.Func(vm) {
+				@Override
+				public Value invoke(Value... args) {
+					System.out.println(args[0].getValue());
+					return Expression.make(vm, Special.UNDEFINED);
+				}
+			});
+			break;
+		//"Classic" instructions
 		case "nnr":
 			Value vl = vm.pop();
 			if(vl != null){
