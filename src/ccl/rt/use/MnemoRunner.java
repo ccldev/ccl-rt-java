@@ -267,6 +267,35 @@ public class MnemoRunner implements Runner {
 		case __JAVA:
 			vm.put(Spec.java(vm, CCL.classFinder, args));
 			break;
+		case __INVOKE0:
+			vm.put(vm.pop().invoke());
+			break;
+		case __INVOKE1: {
+			Value param = vm.pop();
+			vm.put(vm.pop().invoke(param));
+			break;
+		}
+		case __INVOKE2: {
+			Value param2 = vm.pop();
+			Value param1 = vm.pop();
+			vm.put(vm.pop().invoke(param1, param2));
+			break;
+		}
+		case __ARRPUSH1: {
+			Value toPush = vm.pop();
+			Value arr = vm.pop();
+			((Array) arr.getValue()).pushValue(toPush);
+			vm.put(arr);
+			break;
+		}
+		case __ARRPUSH2: {
+			Value toPush = vm.pop();
+			Expression arr = (Expression) vm.pop();
+			((Array) arr.getValue()).pushValue(toPush);
+			arr.setProperty(args, toPush);
+			vm.put(arr);
+			break;
+		}
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
 		return null;

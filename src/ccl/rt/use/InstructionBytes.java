@@ -17,7 +17,9 @@ public interface InstructionBytes {
             "store1","putS","putA",
             "putM","get","duplicate",
             "pop","ret","reserve",
-            "__undefined", "__mkvar_u", "__java"
+            "__undefined", "__mkvar_u", "__java",
+            "__invoke0", "__invoke1", "__invoke2",
+            "__arrpush1", "__arrpush2"
     };
 
     byte __WHILETRUE = 0;
@@ -56,5 +58,10 @@ public interface InstructionBytes {
     byte __UNDEFINED = 33;
     byte __MKVAR_U = 34;
     byte __JAVA = 35;
+    byte __INVOKE0 = 36;
+    byte __INVOKE1 = 37;
+    byte __INVOKE2 = 38;
+    byte __ARRPUSH1 = 39;
+    byte __ARRPUSH2 = 40;
 
 }

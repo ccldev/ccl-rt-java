@@ -39,7 +39,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		func = val;
 	}
 
-	protected void setProperty(String name, Value value) {
+	public void setProperty(String name, Value value) {
 		if (!propList.contains(name)) {
 			propList.add(name);
 		}
