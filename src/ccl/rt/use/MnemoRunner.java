@@ -1,7 +1,9 @@
 package ccl.rt.use;
 
+import ccl.csy.CCL;
 import ccl.rt.*;
 import ccl.rt.lib.Environment;
+import ccl.rt.lib.Spec;
 import ccl.rt.lib.Std;
 import ccl.rt.vm.StackTraceFormer;
 import ccl.v2_1.err.DebugException;
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 //import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import ccl.rt.err.Err;
@@ -20,6 +23,9 @@ import ccl.rt.store.Scope;
 import ccl.rt.store.Variable;
 import ccl.rt.vm.IVM;
 import ccl.rt.vm.Runner;
+
+//Byte constants
+import static ccl.rt.use.InstructionBytes.*;
 
 public class MnemoRunner implements Runner {
 
@@ -29,7 +35,9 @@ public class MnemoRunner implements Runner {
 	
 	private ArrayList<String> instructions;
 	private ArrayList<String> arguments;
-	
+
+	private byte[] instructionBytes;
+
 	public MnemoRunner(Func<String, Func<Void, IOBase<?>>> function){
 		this.streamMaker = function;
 		
@@ -49,6 +57,18 @@ public class MnemoRunner implements Runner {
 			creation(s.nextLine().split(" "));
 		}
 		s.close();
+
+		//translate to bytes
+		instructionBytes = new byte[instructions.size()];
+		for(int i = 0; i < instructionBytes.length; i++){
+			try{
+				instructionBytes[i] = InstructionUtil.get(instructions.get(i));
+			}catch(NullPointerException e){
+				throw new RuntimeException(instructions.get(i), e);
+			}
+		}
+		instructions = null;
+		System.out.println(Arrays.toString(instructionBytes));
 	}
 	
 	@Override
@@ -57,10 +77,10 @@ public class MnemoRunner implements Runner {
 		if(vm.isDebugState()){
 			Logger.std.log("-Execute Start! Runner snapshot: " + this);
 		}
-		
-		for(int i = 0; i < instructions.size(); i++){
+
+		for(int i = 0; i < instructionBytes.length; i++){
 			try {
-				Value v = execution(instructions.get(i), arguments.get(i), vm);
+				Value v = execution(instructionBytes[i], arguments.get(i), vm);
 				if(v != null){
 					return v;
 				}
@@ -68,7 +88,7 @@ public class MnemoRunner implements Runner {
 				if(vm.isDebugState()){
 					Logger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
 				}
-				throw new RuntimeException(StackTraceFormer.formException(new Exception("Instruction " + i + " '" + instructions.get(i) + "'",e), vm));
+				throw new RuntimeException(StackTraceFormer.formException(new Exception("Instruction " + i + " '" + InstructionUtil.get(instructionBytes[i]) + "'",e), vm));
 			}
 		}
 		if(vm.isDebugState()){
@@ -77,10 +97,10 @@ public class MnemoRunner implements Runner {
 		return Expression.make(vm, Special.UNDEFINED);
 	}
 	
-	private Value execution(String instr, String args, IVM vm) throws Exception{
+	private Value execution(byte instr, String args, IVM vm) throws Exception{
 		switch(instr){
 		//For better performance
-		case "__whiletrue": {
+		case __WHILETRUE: {
 			Value func = vm.pop();
 			while (true) {
 				Value v;
@@ -89,13 +109,13 @@ public class MnemoRunner implements Runner {
 				}
 			}
 		}
-		case "__while": {
+		case __WHILE: {
 			Value action = vm.pop();
 			Value condition = vm.pop();
 			Std.whileGlobal(vm, action, condition);
 			break;
 		}
-		case "__forarr": {
+		case __FORARR: {
 			Value action = vm.pop();
 			Array array = (Array) vm.pop().getValue();
 			for (int i = 0; i < array.length(); i++) {
@@ -106,7 +126,7 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		}
-		case "__fornum": {
+		case __FORNUM: {
 			Value action = vm.pop();
 			int numto = vm.pop().num().get().intValue();
 			int numfrom = vm.pop().num().get().intValue();
@@ -118,13 +138,13 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		}
-		case "__whiletrue_nb": {
+		case __WHILETRUE_NB: {
 			Value func = vm.pop();
 			while (true) {
 				func.invoke();
 			}
 		}
-		case "__while_nb": {
+		case __WHILE_NB: {
 			Value action = vm.pop();
 			Value condition = vm.pop();
 			while(condition.invoke().bool().get()){
@@ -132,7 +152,7 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		}
-		case "__forarr_nb": {
+		case __FORARR_NB: {
 			Value action = vm.pop();
 			Array array = (Array) vm.pop().getValue();
 			for (int i = 0; i < array.length(); i++) {
@@ -140,7 +160,7 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		}
-		case "__fornum_nb": {
+		case __FORNUM_NB: {
 			Value action = vm.pop();
 			int numto = vm.pop().num().get().intValue();
 			int numfrom = vm.pop().num().get().intValue();
@@ -149,10 +169,10 @@ public class MnemoRunner implements Runner {
 			}
 			break;
 		}
-		case "__println":
+		case __PRINTLN:
 			System.out.println(vm.pop().getValue());
 			break;
-		case "__println_f":
+		case __PRINTLN_F:
 			vm.put(new ccl.rt.Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
@@ -161,8 +181,33 @@ public class MnemoRunner implements Runner {
 				}
 			});
 			break;
+		case __PRINTLN_C:
+			System.out.println(args);
+			break;
+		case __PRINTLN_CF:
+			vm.put(new ccl.rt.Func(vm) {
+				@Override
+				public Value invoke(Value... vs) {
+					System.out.println(args);
+					return Expression.make(vm, Special.UNDEFINED);
+				}
+			});
+			break;
+		case __SETVAR:
+			sc.load(args).setValue(vm.pop());
+			break;
+		case __MKVAR:
+			sc.reserve(args).setValue(vm.pop());
+			break;
+		case __EXIT:
+			System.exit(0);
+			break;
+		case __THROW:
+			return new Err(vm, new Exception(vm.pop().getValue() + ""));
+		case __THROW_C:
+			return new Err(vm, new Exception(args));
 		//"Classic" instructions
-		case "nnr":
+		case NNR:
 			Value vl = vm.pop();
 			if(vl != null){
 				if(vl.getValue() != Special.UNDEFINED){
@@ -170,7 +215,7 @@ public class MnemoRunner implements Runner {
 				}
 			}
 			break;
-		case "nnr2":
+		case NNR2:
 			Value v = vm.pop();
 			if(v != null){
 				if(v.getValue() != Special.UNDEFINED){
@@ -180,25 +225,25 @@ public class MnemoRunner implements Runner {
 				}
 			}
 			break;
-		case "load": vm.load(args, sc); break;
-		case "putI": vm.i(args); break;
-		case "invoke": invoke(args, vm); break;
-		case "invoke1": invoke1(args, vm); break;
-		case "store":
-			Value va = vm.pop();
-			((Variable) vm.pop()).setValue(va);
-			break;
-		case "store1":
+		case LOAD: vm.load(args, sc); break;
+		case PUTI: vm.i(args); break;
+		case INVOKE: invoke(args, vm); break;
+		case INVOKE1: invoke1(args, vm); break;
+//		case STORE:
+//			Value va = vm.pop();
+//			((Variable) vm.pop()).setValue(va);
+//			break;
+		case STORE1:
 			Variable var = (Variable) vm.pop();
 			Value value = vm.pop();
 			var.setValue(value);
 			break;
-		case "putS": vm.s(args); break;
-		case "putA": vm.a(); break;
-		case "putM": vm.m(this.create(), streamMaker.call(args), sc); break;
-		case "get": vm.put(vm.pop().getProperty(args)); break;
-		case "duplicate": vm.dup(); break;
-		case "pop":
+		case PUTS: vm.s(args); break;
+		case PUTA: vm.a(); break;
+		case PUTM: vm.m(this.create(), streamMaker.call(args), sc); break;
+		case GET: vm.put(vm.pop().getProperty(args)); break;
+		case DUPLICATE: vm.dup(); break;
+		case POP:
 			Value val = vm.pop();
 
 			if(val instanceof Err){
@@ -207,11 +252,20 @@ public class MnemoRunner implements Runner {
 				return (Err) val.getValue();
 			}
 			break;
-		case "ret":
+		case RET:
 			Value ret = vm.pop();
 			return ret;
-		case "reserve":
+		case RESERVE:
 			vm.reserve(args, sc);
+			break;
+		case __UNDEFINED:
+			vm.put(Expression.make(vm, Special.UNDEFINED));
+			break;
+		case __MKVAR_U:
+			sc.reserve(args);
+			break;
+		case __JAVA:
+			vm.put(Spec.java(vm, CCL.classFinder, args));
 			break;
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
