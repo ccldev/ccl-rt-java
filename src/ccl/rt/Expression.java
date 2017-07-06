@@ -340,10 +340,6 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 
 		}
 
-		if(this instanceof ArrayValue){
-			throw new RuntimeException("property not found on array: " + name);
-		}
-
 		Object value = get();
 		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
 				name);

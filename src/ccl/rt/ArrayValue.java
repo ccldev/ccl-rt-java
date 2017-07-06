@@ -144,6 +144,12 @@ public class ArrayValue extends Expression {
 			}
 
 		});
+		setProperty("toString", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				return Expression.make(vm, this + "");
+			}
+		});
 	}
 	
 	public ArrayValue(IVM vm, int size) {

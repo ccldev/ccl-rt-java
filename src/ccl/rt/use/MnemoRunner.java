@@ -7,6 +7,8 @@ import ccl.rt.lib.Spec;
 import ccl.rt.lib.Std;
 import ccl.rt.vm.StackTraceFormer;
 import ccl.v2_1.err.DebugException;
+import coa.rt.Nvp;
+import coa.rt.NvpVal;
 import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.lib.log.Logger;
@@ -272,13 +274,36 @@ public class MnemoRunner implements Runner {
 			break;
 		case __INVOKE1: {
 			Value param = vm.pop();
-			vm.put(vm.pop().invoke(param));
+			if(param instanceof Nvp){
+				Value res = vm.pop().invoke();
+				param.invoke(res);
+				vm.put(res);
+			}else{
+				vm.put(vm.pop().invoke(param));
+			}
 			break;
 		}
 		case __INVOKE2: {
 			Value param2 = vm.pop();
 			Value param1 = vm.pop();
-			vm.put(vm.pop().invoke(param1, param2));
+			if(param1 instanceof Nvp){
+				if(param2 instanceof Nvp){
+					Value res = vm.pop().invoke();
+					param1.invoke(res);
+					param2.invoke(res);
+					vm.put(res);
+				}else{
+					Value res = vm.pop().invoke(param1);
+					param2.invoke(res);
+					vm.put(res);
+				}
+			}else if(param2 instanceof Nvp){
+				Value res = vm.pop().invoke(param1);
+				param2.invoke(res);
+				vm.put(res);
+			}else{
+				vm.put(vm.pop().invoke(param1, param2));
+			}
 			break;
 		}
 		case __ARRPUSH1: {
