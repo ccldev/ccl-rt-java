@@ -231,10 +231,6 @@ public class MnemoRunner implements Runner {
 		case PUTI: vm.i(args); break;
 		case INVOKE: invoke(args, vm); break;
 		case INVOKE1: invoke1(args, vm); break;
-//		case STORE:
-//			Value va = vm.pop();
-//			((Variable) vm.pop()).setValue(va);
-//			break;
 		case STORE1:
 			Variable var = (Variable) vm.pop();
 			Value value = vm.pop();
@@ -319,6 +315,10 @@ public class MnemoRunner implements Runner {
 			((Array) arr.getValue()).pushValue(toPush);
 			arr.setProperty(args, toPush);
 			vm.put(arr);
+			break;
+		}
+		case __FLOAT: {
+			vm.put(Expression.make(vm, Double.parseDouble(args)));
 			break;
 		}
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);

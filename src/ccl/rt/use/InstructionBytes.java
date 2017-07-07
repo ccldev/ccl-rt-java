@@ -13,7 +13,7 @@ public interface InstructionBytes {
             "__setvar","__mkvar","__exit",
             "__throw","__throw_c","nnr",
             "nnr2","load","putI",
-            "invoke","invoke1","store",
+            "invoke","invoke1","__float",
             "store1","putS","putA",
             "putM","get","duplicate",
             "pop","ret","reserve",
@@ -45,7 +45,7 @@ public interface InstructionBytes {
     byte PUTI = 20;
     byte INVOKE = 21;
     byte INVOKE1 = 22;
-    byte STORE = 23;
+    byte __FLOAT = 23;
     byte STORE1 = 24;
     byte PUTS = 25;
     byte PUTA = 26;

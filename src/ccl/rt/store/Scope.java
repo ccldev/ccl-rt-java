@@ -173,6 +173,17 @@ public class Scope {
 				return new Unbound(args[0]);
 			}
 		});
+		variables.put("println", new Func(vm){
+			@Override
+			public Value invoke(Value... args) {
+				if(args.length == 0){
+					System.out.println();
+				}else{
+					System.out.println(args[0].getValue());
+				}
+				return Expression.make(vm, Special.UNDEFINED);
+			}
+		});
 	}
 	private void initSpec(final CustomClassFinder f) {
 		reserve("java").setValue(new Func(vm){
