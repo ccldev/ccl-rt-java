@@ -78,7 +78,7 @@ public class CclVm implements IVM {
 
 	@Override
 	public void i(String integer) {
-		ram().add(Expression.make(this, Long.parseLong(integer)));
+		ram().add(Expression.make(this, Double.parseDouble(integer)));
 	}
 
 	@Override

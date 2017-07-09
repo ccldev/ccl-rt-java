@@ -57,11 +57,17 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 			}if(value.getClass().isArray()){
 				return new ArrayValue(vm, Array.clone(vm, value));
 			}
+
+			if(value instanceof Number){
+				value = ((Number) value).doubleValue();
+			}
 		}
+
+		Object v = value;
 		return new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
 			@Override
 			public Object call(Void aVoid) {
-				return value;
+				return v;
 			}
 		});
 	}
