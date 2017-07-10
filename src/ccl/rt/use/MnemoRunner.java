@@ -70,7 +70,6 @@ public class MnemoRunner implements Runner {
 			}
 		}
 		instructions = null;
-		System.out.println(Arrays.toString(instructionBytes));
 	}
 	
 	@Override
