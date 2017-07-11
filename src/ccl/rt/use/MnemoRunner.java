@@ -320,6 +320,14 @@ public class MnemoRunner implements Runner {
 			vm.put(Expression.make(vm, Double.parseDouble(args)));
 			break;
 		}
+		case NEWSCOPE: {
+			sc = vm.oScope(sc);
+			break;
+		}
+		case OLDSCOPE: {
+			sc = vm.cScope(sc);
+			break;
+		}
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
 		return null;
