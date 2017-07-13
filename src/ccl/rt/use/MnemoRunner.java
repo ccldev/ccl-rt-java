@@ -328,6 +328,11 @@ public class MnemoRunner implements Runner {
 			sc = vm.cScope(sc);
 			break;
 		}
+		case STORE: {
+			Value valu = vm.pop();
+			((Variable) vm.pop()).setValue(valu);
+			break;
+		}
 		default: throw StackTraceFormer.formException(new Exception("Unknown instr: " + instr), vm);
 		}
 		return null;

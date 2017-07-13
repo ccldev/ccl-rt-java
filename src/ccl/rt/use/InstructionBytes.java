@@ -20,7 +20,7 @@ public interface InstructionBytes {
             "__undefined", "__mkvar_u", "__java",
             "__invoke0", "__invoke1", "__invoke2",
             "__arrpush1", "__arrpush2", "newscope",
-            "oldscope"
+            "oldscope", "store"
     };
 
     byte __WHILETRUE = 0;
@@ -66,5 +66,6 @@ public interface InstructionBytes {
     byte __ARRPUSH2 = 40;
     byte NEWSCOPE = 41;
     byte OLDSCOPE = 42;
+    byte STORE = 43;
 
 }
