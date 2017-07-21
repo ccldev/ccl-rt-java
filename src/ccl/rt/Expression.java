@@ -1,12 +1,9 @@
 package ccl.rt;
 
-import ccl.jrt.JArray;
-import ccl.rt.lib.Environment;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.github.coalangsoft.lib.data.ConstantFunc;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
-import io.github.coalangsoft.lib.log.Logger;
+import io.github.coalangsoft.lib.log.TimeLogger;
 import io.github.coalangsoft.reflect.Clss;
 
 import java.util.ArrayList;
@@ -84,7 +81,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 			return;
 		}
 		if(vm.isDebugState()){
-			Logger.std.log("Expression instance created (" + getClass() + ") " + this);
+			TimeLogger.std.log("Expression instance created (" + getClass() + ") " + this);
 		}
 
 	}

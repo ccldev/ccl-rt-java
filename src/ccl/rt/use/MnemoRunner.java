@@ -11,7 +11,7 @@ import coa.rt.Nvp;
 import coa.rt.NvpVal;
 import cpa.subos.io.IOBase;
 import io.github.coalangsoft.lib.data.Func;
-import io.github.coalangsoft.lib.log.Logger;
+import io.github.coalangsoft.lib.log.TimeLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,7 +76,7 @@ public class MnemoRunner implements Runner {
 	public Value execute(IVM vm, Scope sc) {
 		this.sc = sc;
 		if(vm.isDebugState()){
-			Logger.std.log("-Execute Start! Runner snapshot: " + this);
+			TimeLogger.std.log("-Execute Start! Runner snapshot: " + this);
 		}
 
 		for(int i = 0; i < instructionBytes.length; i++){
@@ -87,13 +87,13 @@ public class MnemoRunner implements Runner {
 				}
 			} catch (Exception e) {
 				if(vm.isDebugState()){
-					Logger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
+					TimeLogger.std.log(">Execution done! Exit state: exception (i:" + i + ")");
 				}
 				throw new RuntimeException(StackTraceFormer.formException(new Exception("Instruction " + i + " '" + InstructionUtil.get(instructionBytes[i]) + "'",e), vm));
 			}
 		}
 		if(vm.isDebugState()){
-			Logger.std.log(">Execution done! Exit state: normal");
+			TimeLogger.std.log(">Execution done! Exit state: normal");
 		}
 		return Expression.make(vm, Special.UNDEFINED);
 	}

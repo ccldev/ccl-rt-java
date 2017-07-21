@@ -8,148 +8,69 @@ public class ArrayValue extends Expression {
 	private IVM vm;
 
 	private void init(){
-		setProperty("length", new Func(vm) {
-			@Override
-			public Value invoke(Value... args) {
-				return Expression.make(vm, ((Array) ArrayValue.this.getValue()).length());
+		setProperty("length", Func.by(vm, (args) -> Expression.make(vm, ((Array) ArrayValue.this.getValue()).length())));
+		setProperty("push", Func.by(vm, (args) -> {
+			((Array) ArrayValue.this.getValue()).pushValue(args[0]);
+			if(args.length >= 2){
+				setProperty(args[1].getValue() + "", args[0]);
 			}
-		});
-		setProperty("push", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				((Array) ArrayValue.this.getValue()).pushValue(args[0]);
-				if(args.length >= 2){
-					ArrayValue.this.setProperty(args[1].getValue() + "", args[0]);
-				}
-				return ArrayValue.this;
+			return ArrayValue.this;
+		}));
+		setProperty("get", Func.by(vm, (args) -> ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue())));
+		setProperty("getOrDefault", Func.by(vm, (args) -> {
+			try {
+				return ((Array) getValue()).getExpression(((Number) args[0].getValue()).intValue());
+			} catch (IndexOutOfBoundsException e) {
+				return args[1];
 			}
-		});
-		setProperty("get", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
+		}));
+		setProperty("set", Func.by(vm, (args) -> ((Array) ArrayValue.this.getValue()).setValue(((Number) args[0].getValue()).intValue(), args[1])));
+		setProperty("cut", Func.by(vm, (args) -> new ArrayValue(vm,
+			((Array) getValue()).cut(((Number) args[0].getValue()).intValue())
+		)));
+		setProperty("remove", Func.by(vm, (args) -> ((Array) getValue()).remove(((Number) args[0].getValue()).intValue())));
+		setProperty("add", Func.by(vm, (args) -> ((Array) ArrayValue.this.getValue()).operate("add")));
+		setProperty("mul", Func.by(vm, (args) -> ((Array) ArrayValue.this.getValue()).operate("mul")));
+		setProperty("select", Func.by(vm, (args) -> {
+			try {
+				return ((Array) ArrayValue.this.getValue()).select(args[0]);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-		});
-		setProperty("getOrDefault", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				try{
-					return ((Array) ArrayValue.this.getValue()).getExpression(((Number) args[0].getValue()).intValue());
-				}catch(IndexOutOfBoundsException e){
-					return args[1];
-				}
+		}));
+		setProperty("repeat", Func.by(vm, (args) -> {
+			try {
+				return ((Array) ArrayValue.this.getValue()).repeat();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-		});
-		setProperty("set", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).setValue(((Number) args[0].getValue()).intValue(), args[1]);
+		}));
+		setProperty("sort", Func.by(vm, (args) -> {
+			try {
+				return new ArrayValue(vm, ((Array) ArrayValue.this.getValue()).sort());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-		});
-		setProperty("cut", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				return new ArrayValue(vm, 
-					((Array) ArrayValue.this.getValue()).cut(((Number) args[0].getValue()).intValue())
+		}));
+		setProperty("zip", Func.by(vm, (args) -> {
+			try {
+				return ((Array) ArrayValue.this.getValue()).zip(args[0]);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}));
+		setProperty("link", Func.by(vm, (args) -> {
+			try {
+				Array a = ((Array) ArrayValue.this.getValue()).link(
+						(Array) args[0].getValue(),
+						true
 				);
+				return new ArrayValue(vm,a);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
-			
-		});
-		setProperty("remove", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).remove(((Number) args[0].getValue()).intValue());
-			}
-			
-		});
-		setProperty("add", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).operate("add");
-			}
-			
-		});
-		setProperty("mul", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				return ((Array) ArrayValue.this.getValue()).operate("mul");
-			}
-			
-		});
-		setProperty("select", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return ((Array) ArrayValue.this.getValue()).select(args[0]);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-		});
-		setProperty("repeat", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return ((Array) ArrayValue.this.getValue()).repeat();
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-		});
-		setProperty("sort", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return new ArrayValue(vm, ((Array) ArrayValue.this.getValue()).sort());
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-		});
-		setProperty("zip", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return ((Array) ArrayValue.this.getValue()).zip(args[0]);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-			
-		});
-		setProperty("link", new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					Array a = ((Array) ArrayValue.this.getValue()).link(
-							(Array) args[0].getValue(),
-							true
-					);
-					return new ArrayValue(vm,a);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-		});
-		setProperty("toString", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Expression.make(vm, this + "");
-			}
-		});
+		}));
+		setProperty("toString", Func.by(vm, (args) -> Expression.make(vm, this + "")));
 	}
 	
 	public ArrayValue(IVM vm, int size) {
@@ -159,12 +80,7 @@ public class ArrayValue extends Expression {
 	}
 	
 	public ArrayValue(IVM vm, Array a){
-		super(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
-			@Override
-			public Object call(Void aVoid) {
-				return a;
-			}
-		});
+		super(vm, (args) -> a);
 		init();
 	}
 	

@@ -1,26 +1,45 @@
 package ccl.rt;
 
+import ccl.rt.v6.SingleOperator;
+import ccl.rt.v6.StandardOperator;
 import ccl.rt.vm.IVM;
+
+import java.util.function.Consumer;
 
 public abstract class Func extends Expression{
 
 	public Func(final IVM vm) {
-		super(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
-			@Override
-			public Object call(Void aVoid) {
-				return Special.INVALID;
-			}
-		});
-		setValue(new io.github.coalangsoft.lib.data.Func<Object, Object>(){
-
-			@Override
-			public Object call(Object p) {
-				return invoke(Expression.make(vm, p)).getValue();
-			}
-			
-		});
+		super(vm, (a) -> Special.INVALID);
+		setValue((io.github.coalangsoft.lib.data.Func) (a) -> invoke(Expression.make(vm, a)).getValue());
 	}
 	
 	public abstract Value invoke(Value... args);
+
+	public static Func by(IVM vm, io.github.coalangsoft.lib.data.Func<Value[], Value> action){
+		return new Func(vm) {
+			@Override
+			public Value invoke(Value... args) {
+				return action.call(args);
+			}
+		};
+	}
+
+	public static Func by(IVM vm, StandardOperator op){
+		return new Func(vm) {
+			@Override
+			public Value invoke(Value... args) {
+				return op.op(vm, args[0], args[1]);
+			}
+		};
+	}
+
+	public static Func by(IVM vm, SingleOperator op){
+		return new Func(vm) {
+			@Override
+			public Value invoke(Value... args) {
+				return op.op(vm, args[0]);
+			}
+		};
+	}
 
 }

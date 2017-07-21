@@ -8,6 +8,7 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
+import ccl.rt.v6.lib.MapValue;
 import ccl.rt.vm.IVM;
 
 public class Std {
@@ -160,5 +161,9 @@ public class Std {
 
 	public static Value concat(IVM vm, Value arg, Value arg1) {
 		return Expression.make(vm, ((String) arg.getValue()) + arg1.getValue());
+	}
+
+	public static Value map(IVM vm){
+		return new MapValue(vm);
 	}
 }

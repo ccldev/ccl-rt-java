@@ -38,164 +38,53 @@ public class Scope {
 	}
 
 	private void initOp() {
-		variables.put("add", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.add(vm, args[0], args[1]);
-			}
-		});
-		variables.put("sub", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.sub(vm, args[0], args[1]);
-			}
-		});
-		variables.put("mul", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.mul(vm, args[0], args[1]);
-			}
-		});
-		variables.put("div", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.div(vm, args[0], args[1]);
-			}
-		});
-		variables.put("equals", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.equals(vm, args[0], args[1]);
-			}
-		});
-		variables.put("concat", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.concat(vm, args[0], args[1]);
-			}
-		});
-		variables.put("mod", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.mod(vm, args[0], args[1]);
-			}
-		});
-		variables.put("pow", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.pow(vm, args[0], args[1]);
-			}
-		});
-		variables.put("lss", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.lss(vm, args[0], args[1]);
-			}
-		});
-		variables.put("gtr", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.gtr(vm, args[0], args[1]);
-			}
-		});
-		variables.put("not", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Std.not(vm, args[0]);
-			}
-		});
-		variables.put("nvp", new Func(vm) {
-			@Override
-			public Value invoke(Value... args) {
-				return Nvp.makeNvp(vm, new NvpVal(args[0], args[1]));
-			}
-		});
+		variables.put("add", Func.by(vm, Std::add));
+		variables.put("sub", Func.by(vm, Std::sub));
+		variables.put("mul", Func.by(vm, Std::mul));
+		variables.put("div", Func.by(vm, Std::div));
+		variables.put("equals", Func.by(vm, (args) -> Std.equals(vm, args[0], args[1])));
+		variables.put("concat", Func.by(vm, Std::concat));
+		variables.put("mod", Func.by(vm, Std::mod));
+		variables.put("pow", Func.by(vm, Std::pow));
+		variables.put("lss", Func.by(vm, Std::lss));
+		variables.put("gtr", Func.by(vm, Std::gtr));
+		variables.put("not", Func.by(vm, Std::not));
+		variables.put("nvp", Func.by(vm, (args) -> Nvp.makeNvp(vm, new NvpVal(args[0], args[1]))));
 	}
 
 	private void initCasters() {
-		variables.put("boolean", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.boolean_(vm, args[0]);
+		variables.put("boolean", Func.by(vm, Environment::boolean_));
+		variables.put("error", Func.by(vm, Environment::error));
+		variables.put("float", Func.by(vm, Environment::float_));
+		variables.put("integer", Func.by(vm, Environment::integer));
+		variables.put("char2int", Func.by(vm, Environment::char2int));
+		variables.put("array", Func.by(vm, Environment::array));
+		variables.put("char", Func.by(vm, Environment::char_));
+		variables.put("byte", Func.by(vm, Environment::byte_));
+		variables.put("regex", Func.by(vm, Environment::regex));
+//		variables.put("unbound", new Func(vm){
+//			@Override
+//			public Value invoke(Value... args) {
+//				return new Unbound(args[0]);
+//			}
+//		});
+		variables.put("println", Func.by(vm, (args) -> {
+			if(args.length == 0){
+				System.out.println();
+			}else{
+				System.out.println(args[0].getValue());
 			}
-		});
-		variables.put("error", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.error(vm, args[0]);
-			}
-		});
-		variables.put("float", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.float_(vm, args[0]);
-			}
-		});
-		variables.put("integer", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.integer(vm, args[0]);
-			}
-		});
-		variables.put("char2int", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.char2int(vm, args[0]);
-			}
-		});
-		variables.put("array", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.array(vm, args[0]);
-			}
-		});
-		variables.put("char", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.char_(vm, args[0]);
-			}
-		});
-		variables.put("byte", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.byte_(vm, args[0]);
-			}
-		});
-		variables.put("regex", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return Environment.regex(vm, args[0]);
-			}
-		});
-		variables.put("unbound", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				return new Unbound(args[0]);
-			}
-		});
-		variables.put("println", new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				if(args.length == 0){
-					System.out.println();
-				}else{
-					System.out.println(args[0].getValue());
-				}
-				return Expression.make(vm, Special.UNDEFINED);
-			}
-		});
+			return Expression.make(vm, Special.UNDEFINED);
+		}));
 	}
 	private void initSpec(final CustomClassFinder f) {
-		reserve("java").setValue(new Func(vm){
-			@Override
-			public Value invoke(Value... args) {
-				try {
-					return Spec.java(vm, f, args[0].getValue() + "");
-				} catch (ClassNotFoundException e) {
-					return new Err(vm, e);
-				}
+		reserve("java").setValue(Func.by(vm, (args) -> {
+			try {
+				return Spec.java(vm, f, args[0].getValue() + "");
+			} catch (ClassNotFoundException e) {
+				return new Err(vm, e);
 			}
-		});
+		}));
 		try{
 			reserve("eval").setValue((Value) EvalSetup.reflectEvalSupport(vm));
 		}catch(Exception e){}
@@ -205,67 +94,38 @@ public class Scope {
 		reserve("false").setValue(Expression.make(vm, false));
 		reserve("true").setValue(Expression.make(vm, true));
 		reserve("null").setValue(Expression.make(vm, Special.NULL));
-		reserve("while").setValue(new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				final Value cnd = args[0];
-				return new Func(vm){
-
-					@Override
-					public Value invoke(Value... args) {
-						try {
-							return Std.whileGlobal(vm,args[0],cnd);
-						} catch (Exception e) {
-							return new Err(vm,e);
-						}
-					}
-					
-				};
-			}
-			
-		});
-		reserve("if").setValue(new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				final Value cnd = args[0];
-				return new Func(vm){
-
-					@Override
-					public Value invoke(Value... args) {
-						try {
-							return Std.ifGlobal(vm,args[0],args.length < 2 ? null : args[1],cnd);
-						} catch (Exception e) {
-							e.printStackTrace();
-							return new Err(vm,e);
-						}
-					}
-					
-				};
-			}
-			
-		});
-		reserve("for").setValue(new Func(vm){
-
-			@Override
-			public Value invoke(Value... args) {
-				final Value[] cnd = args;
-				return new Func(vm){
-
-					@Override
-					public Value invoke(Value... args) {
-						try {
-							return Std.forGlobal(vm,args[0], cnd);
-						} catch (Exception e) {
-							return new Err(vm,e);
-						}
-					}
-					
-				};
-			}
-			
-		});
+		reserve("while").setValue(Func.by(vm,(args) ->{
+			final Value cnd = args[0];
+			return Func.by(vm, (a) -> {
+				try {
+					return Std.whileGlobal(vm,a[0],cnd);
+				} catch (Exception e) {
+					return new Err(vm,e);
+				}
+			});
+		}));
+		reserve("if").setValue(Func.by(vm, (args) -> {
+			final Value cnd = args[0];
+			return Func.by(vm, (a) -> {
+				try {
+					return Std.ifGlobal(vm, a[0], a.length < 2 ? null : a[1], cnd);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new Err(vm, e);
+				}
+			});
+		}));
+		reserve("for").setValue(Func.by(vm, (args) -> {
+			final Value[] cnd = args;
+			return Func.by(vm, (a) -> {
+				try {
+					return Std.forGlobal(vm,a[0], cnd);
+				} catch (Exception e) {
+					return new Err(vm,e);
+				}
+			});
+		}));
+		reserve("map").setValue(Func.by(vm, (args) -> Std.map(vm)));
 	}
 	
 	private Scope(IVM vm, Scope parent){

@@ -18,39 +18,11 @@ public class Array extends ModifiableSequence<Value,Array> {
 	private int specLength = Integer.MAX_VALUE;
 
 	public Array(IVM vm, Value[] values){
-		super(new SequenceTool<Value,Array>(new io.github.coalangsoft.lib.data.Func<Value[], Array>() {
-
-			@Override
-			public Array call(Value[] p) {
-				return new Array(vm, p);
-			}
-
-		}, new io.github.coalangsoft.lib.data.Func<Integer, Value[]>() {
-
-			@Override
-			public Value[] call(Integer p) {
-				return new Value[p];
-			}
-
-		}), values);
+		super(new SequenceTool<>((p) -> new Array(vm, p), (p) -> new Value[p]), values);
 	}
 
 	public Array(IVM vm){
-		super(new SequenceTool<Value,Array>(new io.github.coalangsoft.lib.data.Func<Value[], Array>() {
-
-			@Override
-			public Array call(Value[] p) {
-				return new Array(vm, p);
-			}
-
-		}, new io.github.coalangsoft.lib.data.Func<Integer, Value[]>() {
-
-			@Override
-			public Value[] call(Integer p) {
-				return new Value[p];
-			}
-
-		}), new Value[0]);
+		super(new SequenceTool<>((p) -> new Array(vm, p), (p) -> new Value[p]), new Value[0]);
 		values = null;
 	}
 
@@ -159,14 +131,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 		final Value[] origArray = values.clone();
 		
 		return new ArrayValue(vm, new Array(vm, 
-			new io.github.coalangsoft.lib.data.Func<Integer,Value>(){
-
-				@Override
-				public Value call(Integer p) {
-					return origArray[p % origLength];
-				}
-			
-			}
+				(p) -> origArray[p % origLength]
 		));
 	}
 	

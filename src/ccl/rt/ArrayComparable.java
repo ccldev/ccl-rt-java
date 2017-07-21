@@ -14,7 +14,7 @@ public class ArrayComparable implements Comparable<ArrayComparable> {
 	
 	@Override
 	public int compareTo(ArrayComparable arg0) {
-		return ((Comparable) vs[index].getValue()).compareTo((Comparable) vs[arg0.index].getValue());
+		return ((Comparable) vs[index].getValue()).compareTo(vs[arg0.index].getValue());
 	}
 
 }
