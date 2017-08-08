@@ -11,6 +11,7 @@ import ccl.rt.Func;
 import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.store.Scope;
+import ccl.rt.v6.PreparedCoaFunction;
 import coa.rt.Nvp;
 import cpa.subos.io.IOBase;
 import cpa.subos.io.file.FileIOBase;
@@ -54,6 +55,7 @@ public class CclVm implements IVM {
 	public CclVm(){
 		rams = new HashMap<Thread,ArrayList<Value>>();
 		stacks = new HashMap<Thread,Stack<String>>();
+		functionMap = new HashMap<>();
 	}
 
 	@Override
@@ -81,15 +83,21 @@ public class CclVm implements IVM {
 		ram().add(Expression.make(this, Double.parseDouble(integer)));
 	}
 
+	private static final String UNKNOWN = "UNKNOWN SOURCE";
+
+	private HashMap<String, PreparedCoaFunction> functionMap;
+
 	@Override
 	public void m(final Runner r, final io.github.coalangsoft.lib.data.Func<Void, IOBase<?>> f, final Scope sc) {
-		final Runner runner = r.create();
 		IOBase<?> iobase = f.call(null);
+		String path = iobase instanceof FileIOBase ? ((FileIOBase) iobase).getPath() : UNKNOWN;
+
+		final Runner runner = r.create();
 		runner.creation(iobase);
-		String path = iobase instanceof FileIOBase ? ((FileIOBase) iobase).getPath() : "UNKNOWN SOURCE";
-		
-		Func func = new Func(this){
-			
+
+		final PreparedCoaFunction fu = new PreparedCoaFunction(this, iobase, r);
+		Func res = new Func(this){
+
 			@Override
 			public Value invoke(Value... args) {
 				ArrayValue arr = new ArrayValue(CclVm.this, new Array(CclVm.this, args));
@@ -101,15 +109,7 @@ public class CclVm implements IVM {
 
 				sPut(path);
 				setRam(new ArrayList<Value>());
-				Value v;
-				try {
-					v = runner.execute(CclVm.this, myScope);
-				} catch (Exception e) {
-					e.printStackTrace();
-					Exception ex = StackTraceFormer.formException(e, CclVm.this);
-					ex.printStackTrace();
-					throw new RuntimeException(ex);
-				}
+				Value v = fu.invoke(myScope);
 				setRam(oldRam);
 				sPop();
 
@@ -118,7 +118,7 @@ public class CclVm implements IVM {
 			
 		};
 		
-		put(func);
+		put(res);
 	}
 
 	@Override

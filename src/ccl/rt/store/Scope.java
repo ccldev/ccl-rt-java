@@ -11,7 +11,6 @@ import coa.rt.scripting.EvalSetup;
 import ccl.rt.Expression;
 import ccl.rt.Func;
 import ccl.rt.Special;
-import ccl.rt.Unbound;
 import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Environment;
