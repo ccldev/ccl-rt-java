@@ -20,7 +20,7 @@ public class Nvp extends Expression{
         NvpVal v = value.call(null);
         String n = v.getName().getValue().toString();
 
-        return args[0].getProperty("set" + Character.toUpperCase(n.charAt(0)) + n.substring(1)).invoke(v.getValue());
+        return args[0].getProperty(false,"set" + Character.toUpperCase(n.charAt(0)) + n.substring(1)).invoke(v.getValue());
     }
 
     public static Value makeNvp(IVM vm, NvpVal nvpVal) {

@@ -32,11 +32,11 @@ public class Variable implements Value{
 	}
 
 	@Override
-	public Value getProperty(String name) {
+	public Value getProperty(boolean asPrototype, String name) {
 		if(name.equals("_")){
 			return val;
 		}
-		return val.getProperty(name);
+		return val.getProperty(asPrototype, name);
 	}
 
 	@Override
@@ -58,5 +58,15 @@ public class Variable implements Value{
 	public DynamicDouble num() {
 		return new DynamicObject(getValue()).num();
 	}
+
+//	@Override
+//	public void setPrototype(Value proto) {
+//		val.setPrototype(proto);
+//	}
+//
+//	@Override
+//	public String computeType() {
+//		return val.computeType();
+//	}
 
 }

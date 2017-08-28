@@ -21,7 +21,7 @@ public class JInvocationHandler implements InvocationHandler{
 	public Object invoke(Object o, Method m, Object[] args)
 			throws Throwable {
 		try{
-			return base.getProperty(m.getName()).invoke(J.pack(vm, args == null ? new Object[0] : args)).getValue();
+			return base.getProperty(false, m.getName()).invoke(J.pack(vm, args == null ? new Object[0] : args)).getValue();
 		}catch(RuntimeException e){
 			throw StackTraceFormer.formException(e, vm);
 		}

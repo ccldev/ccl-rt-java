@@ -1,5 +1,7 @@
 package ccl.rt;
 
+import ccl.rt.v6.jrt.JClassExpression;
+import ccl.rt.v6.jrt.JProperty;
 import io.github.coalangsoft.lib.data.ConstantFunc;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
@@ -10,8 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import ccl.jrt.JClass;
-import ccl.jrt.JExpression;
 import ccl.rt.err.Err;
 import ccl.rt.lib.Std;
 import ccl.rt.vm.IVM;
@@ -20,6 +20,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 
 	private ArrayList<String> propList;
 	private HashMap<String, Value> properties;
+	private Value prototype;
 
 	private IVM vm;
 
@@ -80,6 +81,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		if(vm == null){
 			return;
 		}
+		//vm.initPrototype(this);
 		if(vm.isDebugState()){
 			TimeLogger.std.log("Expression instance created (" + getClass() + ") " + this);
 		}
@@ -98,7 +100,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		propList.add("native");
 	}
 
-	public Value getProperty(String name) {
+	public Value getProperty(boolean asPrototype, String name) {
 
 		Value v = properties.get(name);
 		if (v != null) {
@@ -211,7 +213,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 			return new Func(vm) {
 				@Override
 				public Value invoke(Value... args) {
-					return Expression.this.getProperty(args[0].getValue() + "");
+					return Expression.this.getProperty(false,args[0].getValue() + "");
 				}
 			};
 		case "setProperty":
@@ -319,8 +321,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 					@Override
 					public Value invoke(Value... args) {
 						Object value = get();
-						return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
-								args[0].getValue() + "");
+						return JProperty.get(vm, value, args[0].getValue() + "");
 					}
 				};
 			case "f":
@@ -340,15 +341,54 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 						};
 					}
 				};
+//			case "setPrototype":
+//				return new Func(vm) {
+//					@Override
+//					public Value invoke(Value... args) {
+//						Expression.this.setPrototype(args[0]);
+//						return Expression.make(vm, Special.UNDEFINED);
+//					}
+//				};
+//			case "getPrototype":
+//				return new Func(vm) {
+//					@Override
+//					public Value invoke(Value... args) {
+//						if(prototype == null){
+//							return Expression.make(vm, Special.UNDEFINED);
+//						}
+//						return prototype;
+//					}
+//				};
+//			case "getObjectPrototype":
+//				return new Func(vm) {
+//					@Override
+//					public Value invoke(Value... args) {
+//						return vm.getPrototype("unknown");
+//					}
+//				};
 
 		}
 
 		Object value = get();
-		return new JExpression(vm, value == null ? Special.UNDEFINED : value, new Clss(value == null ? Special.class : value.getClass()),
-				name);
+
+//		if(prototype != null){
+//			Value p = prototype.getProperty(true, name);
+//			if(!p.computeType().equals("error")){
+//				try {
+//					if(asPrototype){
+//						return p;
+//					}else{
+//						return p.getProperty(false,"bind").invoke(this);
+//					}
+//				} catch (Exception e) {}
+//			}
+//		}
+
+		return JProperty.get(vm, value, name);
+
 	}
 
-	private String computeType() {
+	public String computeType() {
 		Object value = get();
 
 		if (this instanceof Err || value instanceof Err)
@@ -358,7 +398,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		if (value instanceof Boolean){
 			return "boolean";
 		}
-		if (this instanceof JClass)
+		if (this instanceof JClassExpression)
 			return "native";
 		if (value instanceof String)
 			return "string";
@@ -366,7 +406,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 			return "number";
 		if (value instanceof Array)
 			return "array";
-		if (this instanceof JExpression)
+		if (this instanceof JProperty)
 			return "native";
 		if (this instanceof Func)
 			return "function";
@@ -387,7 +427,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		if (args.length == 0) {
 			return this;
 		} else if (args.length == 1) {
-			return getProperty(args[0].getValue() + "");
+			return getProperty(false,args[0].getValue() + "");
 		} else {
 			return new Err(vm, new Exception(
 				"Unsupported parameter count: " + args.length
@@ -423,4 +463,10 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 			}
 		});
 	}
+
+//	@Override
+//	public void setPrototype(Value proto) {
+//		this.prototype = proto;
+//	}
+
 }

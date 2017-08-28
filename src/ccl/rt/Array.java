@@ -87,7 +87,7 @@ public class Array extends ModifiableSequence<Value,Array> {
 		Value v = getExpression(0);
 		for(int i = 1; i < length(); i++){
 			try {
-				v = v.getProperty(op).invoke(getExpression(i));
+				v = v.getProperty(false, op).invoke(getExpression(i));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

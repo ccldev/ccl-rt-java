@@ -33,4 +33,8 @@ public interface IVM {
 	boolean isDebugState();
 
     void swapAndCall(int i) throws Exception;
+
+    //V6
+	void initPrototype(Value v);
+    Value getPrototype(String unknown);
 }

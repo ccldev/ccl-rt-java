@@ -26,7 +26,7 @@ public class EvalSupport extends Expression{
 	}
 	
 	@Override
-	public Value getProperty(String name) {
+	public Value getProperty(boolean asPrototype, String name) {
 		ScriptEngine e = mgr.getEngineByExtension(name);
 		if(e != null){
 			return new ScriptEngineValue(vm,
@@ -34,7 +34,7 @@ public class EvalSupport extends Expression{
 				ScriptValueWrappers.find(e)
 			);
 		}
-		return super.getProperty(name);
+		return super.getProperty(asPrototype, name);
 	}
 
 }

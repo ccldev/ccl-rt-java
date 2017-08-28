@@ -113,7 +113,7 @@ public class MnemoRunner implements Runner {
 		case __WHILE: {
 			Value action = vm.pop();
 			Value condition = vm.pop();
-			Std.whileGlobal(vm, action, condition);
+			vm.put(Std.whileGlobal(vm, action, condition));
 			break;
 		}
 		case __FORARR: {
@@ -121,10 +121,11 @@ public class MnemoRunner implements Runner {
 			Array array = (Array) vm.pop().getValue();
 			for (int i = 0; i < array.length(); i++) {
 				Value v;
-				if ((v = action.invoke()).getValue() != Special.UNDEFINED) {
+				if ((v = action.invoke(array.getExpression(i))).getValue() != Special.UNDEFINED) {
 					return v;
 				}
 			}
+			vm.put(Expression.make(vm, Special.UNDEFINED));
 			break;
 		}
 		case __FORNUM: {
@@ -137,6 +138,7 @@ public class MnemoRunner implements Runner {
 					return v;
 				}
 			}
+			vm.put(Expression.make(vm, Special.UNDEFINED));
 			break;
 		}
 		case __WHILETRUE_NB: {
@@ -151,6 +153,7 @@ public class MnemoRunner implements Runner {
 			while(condition.invoke().bool().get()){
 				action.invoke();
 			}
+			vm.put(Expression.make(vm, Special.UNDEFINED));
 			break;
 		}
 		case __FORARR_NB: {
@@ -159,6 +162,7 @@ public class MnemoRunner implements Runner {
 			for (int i = 0; i < array.length(); i++) {
 				action.invoke();
 			}
+			vm.put(Expression.make(vm, Special.UNDEFINED));
 			break;
 		}
 		case __FORNUM_NB: {
@@ -168,6 +172,7 @@ public class MnemoRunner implements Runner {
 			for (int i = numfrom; i < numto + 1; i++) {
 				action.invoke(Expression.make(vm, i));
 			}
+			vm.put(Expression.make(vm, Special.UNDEFINED));
 			break;
 		}
 		case __PRINTLN:
@@ -238,7 +243,7 @@ public class MnemoRunner implements Runner {
 		case PUTS: vm.s(args); break;
 		case PUTA: vm.a(); break;
 		case PUTM: vm.m(this.create(), streamMaker.call(args), sc); break;
-		case GET: vm.put(vm.pop().getProperty(args)); break;
+		case GET: vm.put(vm.pop().getProperty(false, args)); break;
 		case DUPLICATE: vm.dup(); break;
 		case POP:
 			Value val = vm.pop();

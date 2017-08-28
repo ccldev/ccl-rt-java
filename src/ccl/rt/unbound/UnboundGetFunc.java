@@ -13,7 +13,7 @@ public class UnboundGetFunc implements Func<Value, Value> {
 	
 	@Override
 	public Value call(Value p) {
-		return p.getProperty(prop);
+		return p.getProperty(false, prop);
 	}
 
 }

@@ -23,7 +23,7 @@ public class ThreadDataExpression extends Expression {
 		setValue(data);
 	}
 	
-	public Value getProperty(String p){
+	public Value getProperty(boolean asPrototype, String p){
 		synchronized (this) {
 			if(p.equals("write")){
 				return new Func(vm){
@@ -47,7 +47,7 @@ public class ThreadDataExpression extends Expression {
 					}
 				};
 			}else{
-				return super.getProperty(p);
+				return super.getProperty(asPrototype, p);
 			}
 		}
 	}
