@@ -81,7 +81,7 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		if(vm == null){
 			return;
 		}
-		//vm.initPrototype(this);
+		vm.initPrototype(this);
 		if(vm.isDebugState()){
 			TimeLogger.std.log("Expression instance created (" + getClass() + ") " + this);
 		}
@@ -341,50 +341,56 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 						};
 					}
 				};
-//			case "setPrototype":
-//				return new Func(vm) {
-//					@Override
-//					public Value invoke(Value... args) {
-//						Expression.this.setPrototype(args[0]);
-//						return Expression.make(vm, Special.UNDEFINED);
-//					}
-//				};
-//			case "getPrototype":
-//				return new Func(vm) {
-//					@Override
-//					public Value invoke(Value... args) {
-//						if(prototype == null){
-//							return Expression.make(vm, Special.UNDEFINED);
-//						}
-//						return prototype;
-//					}
-//				};
-//			case "getObjectPrototype":
-//				return new Func(vm) {
-//					@Override
-//					public Value invoke(Value... args) {
-//						return vm.getPrototype("unknown");
-//					}
-//				};
+			case "setPrototype":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						Expression.this.setPrototype(args[0]);
+						return Expression.make(vm, Special.UNDEFINED);
+					}
+				};
+			case "getPrototype":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						if(prototype == null){
+							return Expression.make(vm, Special.UNDEFINED);
+						}
+						return prototype;
+					}
+				};
+			case "getObjectPrototype":
+				return new Func(vm) {
+					@Override
+					public Value invoke(Value... args) {
+						return vm.getPrototype("unknown");
+					}
+				};
 
 		}
 
 		Object value = get();
 
-//		if(prototype != null){
-//			Value p = prototype.getProperty(true, name);
-//			if(!p.computeType().equals("error")){
-//				try {
-//					if(asPrototype){
-//						return p;
-//					}else{
-//						return p.getProperty(false,"bind").invoke(this);
-//					}
-//				} catch (Exception e) {}
-//			}
-//		}
+		try{
+			JProperty prop = JProperty.get(vm, value, name);
+			if(!prop.computeType().equals("error")){
+				return prop;
+			}
+		}catch (RuntimeException e){}
 
-		return JProperty.get(vm, value, name);
+		if(prototype != null){
+			Value p = prototype.getProperty(true, name);
+//			System.err.println("Falling to prototype (" + p + ") of " + this);
+			try {
+				if(asPrototype && !(this instanceof JProperty || this instanceof JClassExpression)){
+					return p;
+				}else if(!p.computeType().equals("error")){
+					return p.getProperty(false,"bind").invoke(this);
+				}
+			} catch (Exception e) {}
+		}
+
+		return new Err(vm, new Exception("No such property '" + name + "' on object " + this));
 
 	}
 
@@ -464,9 +470,9 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		});
 	}
 
-//	@Override
-//	public void setPrototype(Value proto) {
-//		this.prototype = proto;
-//	}
+	@Override
+	public void setPrototype(Value proto) {
+		this.prototype = proto;
+	}
 
 }

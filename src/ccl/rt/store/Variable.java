@@ -59,14 +59,14 @@ public class Variable implements Value{
 		return new DynamicObject(getValue()).num();
 	}
 
-//	@Override
-//	public void setPrototype(Value proto) {
-//		val.setPrototype(proto);
-//	}
-//
-//	@Override
-//	public String computeType() {
-//		return val.computeType();
-//	}
+	@Override
+	public void setPrototype(Value proto) {
+		val.setPrototype(proto);
+	}
+
+	@Override
+	public String computeType() {
+		return val.computeType();
+	}
 
 }

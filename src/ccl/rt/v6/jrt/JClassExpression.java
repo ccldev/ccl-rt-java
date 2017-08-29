@@ -35,8 +35,7 @@ public class JClassExpression extends Expression {
                 break;
             }
         }
-        JProperty prop = new JProperty(vm,null, clss.getMethods(null, name), clss.getField(name), innerClass);
-        prop.validate(name);
+        JProperty prop = new JProperty(vm,null, clss.getMethods(null, name), clss.getField(name), innerClass, name);
         return prop;
     }
 

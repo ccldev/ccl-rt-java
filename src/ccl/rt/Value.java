@@ -15,8 +15,8 @@ public interface Value {
 	DynamicBoolean bool();
 	DynamicDouble num();
 
-//	//V6
-//	void setPrototype(Value proto);
-//	String computeType();
+	//V6
+	void setPrototype(Value proto);
+	String computeType();
 	
 }

@@ -18,4 +18,8 @@ public class FXLauncher {
         });
     }
 
+    public static void launch(Func<Stage, Object> f, Object noeffect){
+        launch(f);
+    }
+
 }

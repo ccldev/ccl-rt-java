@@ -54,30 +54,30 @@ public class CclVm implements IVM {
 		rams = new HashMap<Thread,ArrayList<Value>>();
 		stacks = new HashMap<Thread,Stack<String>>();
 		functionMap = new HashMap<>();
-//		prototypes = new HashMap<>();
-//
-//		prototypes.put("unknown", Expression.make(this, Special.UNDEFINED));
-//		Value functionProto = Expression.make(this, Special.UNDEFINED);
-//		functionProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("function", functionProto);
-//		Value arrayProto = Expression.make(this, Special.UNDEFINED);
-//		arrayProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("array", arrayProto);
-//		Value stringProto = Expression.make(this, Special.UNDEFINED);
-//		stringProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("string", stringProto);
-//		Value booleanProto = Expression.make(this, Special.UNDEFINED);
-//		booleanProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("boolean", booleanProto);
-//		Value numberProto = Expression.make(this, Special.UNDEFINED);
-//		numberProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("number", numberProto);
-//		Value nativeProto = Expression.make(this, Special.UNDEFINED);
-//		nativeProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("native", nativeProto);
-//		Value errorProto = Expression.make(this, Special.UNDEFINED);
-//		errorProto.setPrototype(prototypes.get("unknown"));
-//		prototypes.put("error", errorProto);
+		prototypes = new HashMap<>();
+
+		prototypes.put("unknown", Expression.make(this, Special.UNDEFINED));
+		Value functionProto = Expression.make(this, Special.UNDEFINED);
+		functionProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("function", functionProto);
+		Value arrayProto = Expression.make(this, Special.UNDEFINED);
+		arrayProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("array", arrayProto);
+		Value stringProto = Expression.make(this, Special.UNDEFINED);
+		stringProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("string", stringProto);
+		Value booleanProto = Expression.make(this, Special.UNDEFINED);
+		booleanProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("boolean", booleanProto);
+		Value numberProto = Expression.make(this, Special.UNDEFINED);
+		numberProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("number", numberProto);
+		Value nativeProto = Expression.make(this, Special.UNDEFINED);
+		nativeProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("native", nativeProto);
+		Value errorProto = Expression.make(this, Special.UNDEFINED);
+		errorProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("error", errorProto);
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class CclVm implements IVM {
 
 	@Override
 	public void initPrototype(Value v) {
-//		v.setPrototype(getPrototype(v.computeType()));
+		v.setPrototype(getPrototype(v.computeType()));
 	}
 
 	@Override

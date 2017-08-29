@@ -17,15 +17,18 @@ public class JProperty extends Expression {
     private final Object instance;
     private final Clss innerClass;
     private final IVM vm;
+    private final String name;
 
-    public JProperty(IVM vm, Object classInstance, SpecificMethods methods, Field field, Clss innerClass) {
+    public JProperty(IVM vm, Object classInstance, SpecificMethods methods, Field field, Clss innerClass, String name) {
         super(vm, (a) -> Special.UNDEFINED);
         this.vm = vm;
         this.instance = classInstance;
         this.methods = methods;
         this.field = field;
         this.innerClass = innerClass;
+        this.name = name;
         initialize();
+        validate();
     }
 
     private void initialize() {
@@ -41,7 +44,7 @@ public class JProperty extends Expression {
         }
     }
 
-    public void validate(String name) {
+    private void validate() {
         if(field == null && methods.length() == 0 && innerClass == null){
             throw new RuntimeException("No such native property '" + name + "'!");
         }
@@ -51,7 +54,7 @@ public class JProperty extends Expression {
     public Value getProperty(boolean asPrototype, String name) {
         try{
             JProperty prop = JProperty.get(vm, getValue(), name);
-            prop.validate(name);
+            prop.validate();
             return prop;
         }catch (RuntimeException e){
             return super.getProperty(asPrototype, name);
@@ -66,7 +69,12 @@ public class JProperty extends Expression {
         }else if(innerClass != null){
             return J.invoke(vm, instance, innerClass, args);
         }else{
-            return super.invoke(args);
+            new RuntimeException("Trying to invoke " + this).printStackTrace();
+            try{
+                return super.invoke(args);
+            }catch (RuntimeException e){
+                throw new RuntimeException("Unable to invoke " + this, e);
+            }
         }
     }
 
@@ -75,6 +83,18 @@ public class JProperty extends Expression {
             value = Special.UNDEFINED;
         }
         Clss c = new Clss(value.getClass());
-        return new JProperty(vm, value, c.getMethods(value, name), c.getField(name), c.innerClass(name));
+        return new JProperty(vm, value, c.getMethods(value, name), c.getField(name), c.innerClass(name), name);
+    }
+
+    @Override
+    public String toString() {
+        return "JProperty{" +
+                "name=" + name +
+                ", field=" + field +
+                ", methods=" + methods +
+                ", instance=" + instance +
+                ", innerClass=" + innerClass +
+                ", vm=" + vm +
+                '}';
     }
 }
