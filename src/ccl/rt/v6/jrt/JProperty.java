@@ -1,12 +1,13 @@
 package ccl.rt.v6.jrt;
 
 import ccl.jrt.J;
-import ccl.jrt.JCast;
 import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
 import ccl.rt.v6.property.IProperty;
 import ccl.rt.vm.IVM;
+import coa.rt.Nvp;
+import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.reflect.Clss;
 import io.github.coalangsoft.reflect.SpecificMethods;
 
@@ -14,7 +15,8 @@ import java.lang.reflect.Field;
 
 public class JProperty extends Expression implements IProperty {
 
-    private final Field field;
+    private Func<Value,Void> setter;
+    private Func<Void,Object> getter;
     private final SpecificMethods methods;
     private final Object instance;
     private final Clss innerClass;
@@ -26,7 +28,10 @@ public class JProperty extends Expression implements IProperty {
         this.vm = vm;
         this.instance = classInstance;
         this.methods = methods;
-        this.field = field;
+        if(field != null){
+            this.setter = new JFieldSetter(vm,instance,field);
+            this.getter = new JFieldGetter(instance,field);
+        }
         this.innerClass = innerClass;
         this.name = name;
         initialize();
@@ -34,20 +39,27 @@ public class JProperty extends Expression implements IProperty {
     }
 
     private void initialize() {
-        if (field == null) {
-            setValue(Special.UNDEFINED);
-        } else {
-            try {
-                setValue(field.get(instance));
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException(
-                        "Implementation Exception: Field found but not found :(");
+        if(getter == null && instance != null){
+            //get value by method
+            Clss c = new Clss(instance.getClass());
+            SpecificMethods set = c.getMethods(instance, Nvp.makeMethodName("set", name));
+            if(set.length() != 0){
+                setter = new JMethodSetter(vm, instance, set);
             }
+
+            SpecificMethods get = c.getMethods(instance, Nvp.makeMethodName("get", name));
+            if(get.length() == 0){
+                get = c.getMethods(instance, Nvp.makeMethodName("is", name));
+            }if(get.length() != 0){
+                getter = new JMethodGetter(get);
+            }
+
         }
+        setValueFunc(getter);
     }
 
     private void validate() {
-        if(field == null && methods.length() == 0 && innerClass == null){
+        if(getter == null && methods.length() == 0 && innerClass == null){
             throw new RuntimeException("No such native property '" + name + "'!");
         }
     }
@@ -92,7 +104,8 @@ public class JProperty extends Expression implements IProperty {
     public String toString() {
         return "JProperty{" +
                 "name=" + name +
-                ", field=" + field +
+                ", setter=" + setter +
+                ", getter=" + getter +
                 ", methods=" + methods +
                 ", instance=" + instance +
                 ", innerClass=" + innerClass +
@@ -107,20 +120,21 @@ public class JProperty extends Expression implements IProperty {
 
     @Override
     public void setValue(Value n) {
-        if(field != null){
-            try {
-                Object o = JCast.cast(vm,instance,new Value[]{n}, new Clss[]{new Clss(field.getType())})[0];
-                field.set(instance,o);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        super.setValue(n);
+        setter.call(n);
     }
 
     @Override
     public Value getHolder() {
         throw new RuntimeException("NIy");
+    }
+
+    public String computeType(){
+        if(getter != null && setter != null){
+            return super.computeType();
+        }else if(methods != null){
+            return "function";
+        }else{
+            return "error";
+        }
     }
 }

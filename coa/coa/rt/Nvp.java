@@ -20,7 +20,8 @@ public class Nvp extends Expression{
         NvpVal v = value.call(null);
         String n = v.getName().getValue().toString();
 
-        return args[0].getProperty(false,"set" + Character.toUpperCase(n.charAt(0)) + n.substring(1)).invoke(v.getValue());
+        args[0].getProperty(false,n).setValue(v.getValue());
+        return args[0].getProperty(false,n);
     }
 
     public static Value makeNvp(IVM vm, NvpVal nvpVal) {
@@ -30,5 +31,9 @@ public class Nvp extends Expression{
                 return nvpVal;
             }
         });
+    }
+
+    public static String makeMethodName(String prefix, String name){
+        return prefix + Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
 }
