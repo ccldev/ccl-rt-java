@@ -3,7 +3,7 @@ package ccl.rt.store;
 import java.util.List;
 
 import ccl.rt.Value;
-import ccl.rt.v6.property.IProperty;
+import ccl.rt.IProperty;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;

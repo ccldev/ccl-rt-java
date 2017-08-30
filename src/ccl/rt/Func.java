@@ -1,10 +1,8 @@
 package ccl.rt;
 
-import ccl.rt.v6.SingleOperator;
-import ccl.rt.v6.StandardOperator;
+import ccl.rt.lib.SingleOperator;
+import ccl.rt.lib.StandardOperator;
 import ccl.rt.vm.IVM;
-
-import java.util.function.Consumer;
 
 public abstract class Func extends Expression{
 

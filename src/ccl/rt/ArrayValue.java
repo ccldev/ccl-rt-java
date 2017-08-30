@@ -1,8 +1,6 @@
 package ccl.rt;
 
-import ccl.rt.v6.property.IProperty;
 import ccl.rt.vm.IVM;
-import ccl.rt.err.Err;
 
 public class ArrayValue extends Expression {
 

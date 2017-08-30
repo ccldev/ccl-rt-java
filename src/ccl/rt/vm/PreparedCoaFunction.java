@@ -1,4 +1,4 @@
-package ccl.rt.v6;
+package ccl.rt.vm;
 
 import ccl.rt.Array;
 import ccl.rt.ArrayValue;

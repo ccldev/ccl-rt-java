@@ -1,8 +1,4 @@
-package ccl.rt.v6.property;
-
-import ccl.rt.Expression;
-import ccl.rt.Value;
-import ccl.rt.vm.IVM;
+package ccl.rt;
 
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicDouble;

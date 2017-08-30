@@ -1,17 +1,9 @@
-package ccl.rt.v6.jrt;
+package ccl.jrt;
 
-import ccl.csy.CCL;
-import ccl.jrt.J;
-import ccl.jrt.JInvocationHandler;
 import ccl.rt.Expression;
 import ccl.rt.Value;
 import ccl.rt.vm.IVM;
-import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
-import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 import io.github.coalangsoft.reflect.Clss;
-
-import java.lang.reflect.Proxy;
-import java.util.List;
 
 public class JClassExpression extends Expression {
 

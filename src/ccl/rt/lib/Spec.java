@@ -1,6 +1,6 @@
 package ccl.rt.lib;
 
-import ccl.rt.v6.jrt.JClassExpression;
+import ccl.jrt.JClassExpression;
 import ccl.rt.vm.StackTraceFormer;
 import io.github.coalangsoft.ifw.use.InterfaceWorld;
 import io.github.coalangsoft.lib.reflect.CustomClassFinder;

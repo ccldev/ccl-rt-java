@@ -1,6 +1,5 @@
 package ccl.rt;
 
-import ccl.rt.v6.property.IProperty;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 

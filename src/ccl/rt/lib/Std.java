@@ -9,8 +9,8 @@ import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
 import ccl.rt.store.Variable;
-import ccl.rt.v6.lib.MapValue;
-import ccl.rt.v6.property.IProperty;
+import ccl.rt.MapValue;
+import ccl.rt.IProperty;
 import ccl.rt.vm.IVM;
 
 public class Std {

@@ -1,4 +1,4 @@
-package ccl.rt.v6.lib;
+package ccl.rt;
 
 import ccl.rt.Expression;
 import ccl.rt.Func;

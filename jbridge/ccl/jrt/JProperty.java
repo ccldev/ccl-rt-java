@@ -1,10 +1,9 @@
-package ccl.rt.v6.jrt;
+package ccl.jrt;
 
-import ccl.jrt.J;
 import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
-import ccl.rt.v6.property.IProperty;
+import ccl.rt.IProperty;
 import ccl.rt.vm.IVM;
 import coa.rt.Nvp;
 import io.github.coalangsoft.lib.data.Func;

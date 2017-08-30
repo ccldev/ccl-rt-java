@@ -1,14 +1,11 @@
 package ccl.rt;
 
-import ccl.rt.v6.jrt.JClassExpression;
-import ccl.rt.v6.jrt.JProperty;
-import ccl.rt.v6.property.CoaProperty;
-import ccl.rt.v6.property.IProperty;
+import ccl.jrt.JClassExpression;
+import ccl.jrt.JProperty;
 import io.github.coalangsoft.lib.data.ConstantFunc;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
 import io.github.coalangsoft.lib.log.TimeLogger;
-import io.github.coalangsoft.reflect.Clss;
 
 import java.util.ArrayList;
 import java.util.HashMap;

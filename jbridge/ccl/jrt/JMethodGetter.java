@@ -1,4 +1,4 @@
-package ccl.rt.v6.jrt;
+package ccl.jrt;
 
 import io.github.coalangsoft.lib.data.Func;
 import io.github.coalangsoft.reflect.SpecificMethods;

@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import ccl.rt.*;
-import ccl.rt.lib.Spec;
 import ccl.rt.store.Scope;
-import ccl.rt.v6.PreparedCoaFunction;
 import coa.rt.Nvp;
 import cpa.subos.io.IOBase;
 import cpa.subos.io.file.FileIOBase;

@@ -1,4 +1,4 @@
-package ccl.rt.v6.jrt;
+package ccl.jrt;
 
 import ccl.jrt.J;
 import ccl.rt.Value;

@@ -1,4 +1,4 @@
-package ccl.rt.v6.jrt;
+package ccl.jrt;
 
 import ccl.rt.Value;
 import io.github.coalangsoft.lib.data.Func;
