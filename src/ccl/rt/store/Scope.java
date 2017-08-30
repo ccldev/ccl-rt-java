@@ -49,6 +49,7 @@ public class Scope {
 		variables.put("gtr", Func.by(vm, Std::gtr));
 		variables.put("not", Func.by(vm, Std::not));
 		variables.put("nvp", Func.by(vm, (args) -> Nvp.makeNvp(vm, new NvpVal(args[0], args[1]))));
+		variables.put("set", Func.by(vm, Std::set));
 	}
 
 	private void initCasters() {

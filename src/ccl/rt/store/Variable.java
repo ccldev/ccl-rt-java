@@ -3,6 +3,7 @@ package ccl.rt.store;
 import java.util.List;
 
 import ccl.rt.Value;
+import ccl.rt.v6.property.IProperty;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
@@ -32,10 +33,7 @@ public class Variable implements Value{
 	}
 
 	@Override
-	public Value getProperty(boolean asPrototype, String name) {
-		if(name.equals("_")){
-			return val;
-		}
+	public IProperty getProperty(boolean asPrototype, String name) {
 		return val.getProperty(asPrototype, name);
 	}
 

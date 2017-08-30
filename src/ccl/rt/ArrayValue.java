@@ -1,5 +1,6 @@
 package ccl.rt;
 
+import ccl.rt.v6.property.IProperty;
 import ccl.rt.vm.IVM;
 import ccl.rt.err.Err;
 
@@ -84,12 +85,12 @@ public class ArrayValue extends Expression {
 		init();
 	}
 	
-	public Value getProperty(boolean asPrototype, String prop){
+	public Value getProperty0(boolean asPrototype, String prop){
 		try{
 			double d = Double.parseDouble(prop);
 			return ((Array) ArrayValue.this.getValue()).getExpression((int) d);
 		}catch(NumberFormatException e){
-			return super.getProperty(asPrototype, prop);
+			return super.getProperty0(asPrototype, prop);
 		}
 	}
 

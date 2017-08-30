@@ -34,11 +34,11 @@ public class NashornMirrorValue extends Expression {
 		}
 	}
 	
-	public Value getProperty(boolean asPrototype, String name){
+	public Value getProperty0(boolean asPrototype, String name){
 		if(mirror.hasMember(name)){
 			return wrap(mirror.getMember(name));
 		}else{
-			return super.getProperty(asPrototype, name);
+			return super.getProperty0(asPrototype, name);
 		}
 	}
 

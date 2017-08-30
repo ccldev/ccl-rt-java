@@ -25,7 +25,7 @@ public class JClassExpression extends Expression {
     }
 
     @Override
-    public Value getProperty(boolean asPrototype, String name) {
+    public JProperty getProperty(boolean asPrototype, String name) {
         Clss innerClass = null;
 
         Clss[] classes = clss.getDeclaredClasses().getRaw();

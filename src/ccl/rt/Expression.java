@@ -2,6 +2,8 @@ package ccl.rt;
 
 import ccl.rt.v6.jrt.JClassExpression;
 import ccl.rt.v6.jrt.JProperty;
+import ccl.rt.v6.property.CoaProperty;
+import ccl.rt.v6.property.IProperty;
 import io.github.coalangsoft.lib.data.ConstantFunc;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
@@ -100,7 +102,16 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 		propList.add("native");
 	}
 
-	public Value getProperty(boolean asPrototype, String name) {
+	@Override
+	public IProperty getProperty(boolean asPrototype, String name) {
+		Value v = getProperty0(asPrototype,name);
+		if(v instanceof IProperty){
+			return (IProperty) v;
+		}
+		return new CoaProperty(v,name,this);
+	}
+
+	protected Value getProperty0(boolean asPrototype, String name) {
 
 		Value v = properties.get(name);
 		if (v != null) {

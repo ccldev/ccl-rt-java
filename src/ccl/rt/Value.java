@@ -1,5 +1,6 @@
 package ccl.rt;
 
+import ccl.rt.v6.property.IProperty;
 import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicDouble;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 public interface Value {
 	
-	Value getProperty(boolean asPrototype, String name);
+	IProperty getProperty(boolean asPrototype, String name);
 	Object getValue();
 	List<String> getProperties();
 	Value invoke(Value... args) throws Exception;

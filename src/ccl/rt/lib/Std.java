@@ -8,7 +8,9 @@ import ccl.rt.Value;
 import ccl.rt.err.Err;
 import ccl.rt.lib.func.BindFunc;
 import ccl.rt.lib.func.UnbindFunc;
+import ccl.rt.store.Variable;
 import ccl.rt.v6.lib.MapValue;
+import ccl.rt.v6.property.IProperty;
 import ccl.rt.vm.IVM;
 
 public class Std {
@@ -166,4 +168,16 @@ public class Std {
 	public static Value map(IVM vm){
 		return new MapValue(vm);
 	}
+
+    public static Value set(IVM ivm, Value var, Value newVal) {
+		if(var instanceof IProperty){
+			((IProperty) var).setValue(newVal);
+			return newVal;
+		}else if(var instanceof Variable){
+			((Variable) var).setValue(newVal);
+			return newVal;
+		}else{
+			throw new RuntimeException("NIy");
+		}
+    }
 }

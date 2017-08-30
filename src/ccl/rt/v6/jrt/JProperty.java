@@ -1,16 +1,18 @@
 package ccl.rt.v6.jrt;
 
 import ccl.jrt.J;
+import ccl.jrt.JCast;
 import ccl.rt.Expression;
 import ccl.rt.Special;
 import ccl.rt.Value;
+import ccl.rt.v6.property.IProperty;
 import ccl.rt.vm.IVM;
 import io.github.coalangsoft.reflect.Clss;
 import io.github.coalangsoft.reflect.SpecificMethods;
 
 import java.lang.reflect.Field;
 
-public class JProperty extends Expression {
+public class JProperty extends Expression implements IProperty {
 
     private final Field field;
     private final SpecificMethods methods;
@@ -51,7 +53,7 @@ public class JProperty extends Expression {
     }
 
     @Override
-    public Value getProperty(boolean asPrototype, String name) {
+    public IProperty getProperty(boolean asPrototype, String name) {
         try{
             JProperty prop = JProperty.get(vm, getValue(), name);
             prop.validate();
@@ -96,5 +98,29 @@ public class JProperty extends Expression {
                 ", innerClass=" + innerClass +
                 ", vm=" + vm +
                 '}';
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setValue(Value n) {
+        if(field != null){
+            try {
+                Object o = JCast.cast(vm,instance,new Value[]{n}, new Clss[]{new Clss(field.getType())})[0];
+                field.set(instance,o);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+        super.setValue(n);
+    }
+
+    @Override
+    public Value getHolder() {
+        throw new RuntimeException("NIy");
     }
 }
