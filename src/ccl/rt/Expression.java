@@ -46,25 +46,16 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 	protected boolean contains(String name) {
 		return properties.get(name) != null;
 	}
-	
-	public static Expression make(IVM vm, Object value) {
-		if(value != null){
-			if(value instanceof Array){
-				return new ArrayValue(vm, (Array) value);
-			}if(value.getClass().isArray()){
-				return new ArrayValue(vm, Array.clone(vm, value));
-			}
 
-			if(value instanceof Number){
-				value = ((Number) value).doubleValue();
-			}
-		}
+	public static Value make(IVM vm, Object value){
+		return CoaCast.cast(vm, value);
+	}
 
-		Object v = value;
+	static Expression make0(IVM vm, Object value) {
 		return new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
 			@Override
 			public Object call(Void aVoid) {
-				return v;
+				return value;
 			}
 		});
 	}
