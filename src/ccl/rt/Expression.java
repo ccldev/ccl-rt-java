@@ -377,9 +377,8 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 
 		}
 
-		Object value = get();
-
 		try{
+			Object value = get();
 			JProperty prop = JProperty.get(vm, value, name);
 			if(!prop.computeType().equals("error")){
 				return prop;
@@ -430,7 +429,11 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 	}
 
 	public Object getValue() {
-		return get();
+		try{
+			return get();
+		}catch(NullPointerException e){
+			return Special.UNDEFINED;
+		}
 	}
 
 	public final List<String> getProperties() {
