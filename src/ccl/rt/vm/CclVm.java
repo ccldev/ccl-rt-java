@@ -76,6 +76,9 @@ public class CclVm implements IVM {
 		Value errorProto = Expression.make(this, Special.UNDEFINED);
 		errorProto.setPrototype(prototypes.get("unknown"));
 		prototypes.put("error", errorProto);
+		Value undefinedProto = Expression.make(this, Special.UNDEFINED);
+		undefinedProto.setPrototype(prototypes.get("unknown"));
+		prototypes.put("undefined", undefinedProto);
 	}
 
 	@Override

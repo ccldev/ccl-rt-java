@@ -6,6 +6,8 @@ import ccl.rt.Expression;
 import ccl.rt.Value;
 import ccl.rt.vm.IVM;
 
+import java.util.Arrays;
+
 public class NashornMirrorValue extends Expression {
 
 	private ScriptObjectMirror mirror;
@@ -20,6 +22,13 @@ public class NashornMirrorValue extends Expression {
 		});
 		this.vm = vm;
 		this.mirror = value;
+
+		String[] props = value.getOwnKeys(true);
+		for(int i = 0; i < props.length; i++){
+			if(!getProperties().contains(props[i])){
+				getProperties().add(props[i]);
+			}
+		}
 	}
 	
 	public Value invoke(Value... args) throws Exception{

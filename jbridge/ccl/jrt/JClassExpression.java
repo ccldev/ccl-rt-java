@@ -1,9 +1,14 @@
 package ccl.jrt;
 
 import ccl.rt.Expression;
+import ccl.rt.IProperty;
 import ccl.rt.Value;
 import ccl.rt.vm.IVM;
 import io.github.coalangsoft.reflect.Clss;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class JClassExpression extends Expression {
 
@@ -14,10 +19,30 @@ public class JClassExpression extends Expression {
         super(vm, (x) -> clss);
         this.vm = vm;
         this.clss = clss;
+
+        Field[] fs = clss.base.getFields();
+        for(int i = 0; i < fs.length; i++){
+            Field f = fs[i];
+            if(Modifier.isStatic(f.getModifiers())){
+                if(!getProperties().contains(f.getName())){
+                    getProperties().add(f.getName());
+                }
+            }
+        }
+
+        Method[] ms = clss.base.getMethods();
+        for(int i = 0; i < ms.length; i++){
+            Method m = ms[i];
+            if(Modifier.isStatic(m.getModifiers())){
+                if(!getProperties().contains(m.getName())){
+                    getProperties().add(m.getName());
+                }
+            }
+        }
     }
 
     @Override
-    public JProperty getProperty(boolean asPrototype, String name) {
+    public IProperty getProperty(boolean asPrototype, String name) {
         Clss innerClass = null;
 
         Clss[] classes = clss.getDeclaredClasses().getRaw();
@@ -27,8 +52,15 @@ public class JClassExpression extends Expression {
                 break;
             }
         }
-        JProperty prop = new JProperty(vm,null, clss.getMethods(null, name), clss.getField(name), innerClass, name);
-        return prop;
+        try{
+            JProperty prop = new JProperty(vm,null, clss.getMethods(null, name), clss.getField(name), innerClass, name);
+            if(prop.computeType().equals("error")){
+                return super.getProperty(asPrototype,name);
+            }
+            return prop;
+        }catch(Exception e){
+            return super.getProperty(asPrototype,name);
+        }
     }
 
     @Override

@@ -7,6 +7,9 @@ import io.github.coalangsoft.lib.dynamic.DynamicBoolean;
 import io.github.coalangsoft.lib.dynamic.DynamicObject;
 import io.github.coalangsoft.lib.log.TimeLogger;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,12 +55,30 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 	}
 
 	static Expression make0(IVM vm, Object value) {
-		return new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
+		Expression e = new Expression(vm, new io.github.coalangsoft.lib.data.Func<Void, Object>() {
 			@Override
 			public Object call(Void aVoid) {
 				return value;
 			}
 		});
+
+		Field[] fs = value.getClass().getFields();
+		for(int i = 0; i < fs.length; i++){
+			Field f = fs[i];
+			if(!e.getProperties().contains(f.getName())){
+				e.getProperties().add(f.getName());
+			}
+		}
+
+		Method[] ms = value.getClass().getMethods();
+		for(int i = 0; i < ms.length; i++){
+			Method m = ms[i];
+			if(!e.getProperties().contains(m.getName())){
+				e.getProperties().add(m.getName());
+			}
+		}
+
+		return e;
 	}
 
 	public Expression(IVM vm, io.github.coalangsoft.lib.data.Func<Void, ? extends Object> value) {
@@ -176,6 +197,22 @@ public class Expression extends DynamicObject<Object> implements Value, Comparab
 						return Std.mod(vm, Expression.this, args[0]);
 					}
 				};
+			}
+		}
+
+		if(computeType().equals("string")){
+			switch(name){
+				case "format":
+					return new Func(vm){
+						@Override
+						public Value invoke(Value... args) {
+							Object[] os = new Object[args.length];
+							for(int i = 0; i < os.length; i++){
+								os[i] = args[i].getValue();
+							}
+							return Expression.make(vm,String.format(Expression.this.getValue() + "", os));
+						}
+					};
 			}
 		}
 
